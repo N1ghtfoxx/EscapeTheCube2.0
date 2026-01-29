@@ -50,6 +50,7 @@ public class DiceManager : MonoBehaviour
         int total = 0;
         foreach (Rigidbody diceRb in diceRigidbodies)
         {
+            diceRb.isKinematic = false;
             diceRb.linearVelocity = Vector3.zero;
             diceRb.angularVelocity = Vector3.zero;
             diceRb.transform.position = new Vector3(throwPosition.position.x, throwPosition.position.y, throwPosition.position.z + Random.Range(-3.5f, 3.5f));
@@ -95,10 +96,14 @@ public class DiceManager : MonoBehaviour
             int diceValue = int.Parse(n.Substring(n.Length-1));
             
             total += diceValue;
+            diceRb.isKinematic = true;
         }
+        yield return new WaitForSeconds(waitTimeBeforeResult);
         OnDiceResult.Invoke(total);
-
-
+        foreach (Rigidbody diceRb in diceRigidbodies)
+        {
+            diceRb.transform.position = throwPosition.position;
+        }
 
     }
 

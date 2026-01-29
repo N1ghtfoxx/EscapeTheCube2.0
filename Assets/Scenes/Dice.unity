@@ -299,7 +299,7 @@ MonoBehaviour:
   dicePrefab: {fileID: 4526697165007689349, guid: f4416a1827af9cf489101f8307753425, type: 3}
   diceForce: 0.4
   diceTorque: 0.1
-  waitTimeBeforeResult: 0
+  waitTimeBeforeResult: 1
   throwPosition: {fileID: 1987027658}
   OnDiceResult:
     m_PersistentCalls:
@@ -957,7 +957,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1755447530849516131}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Eye-5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6117185341086872260}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Eye-2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8922592678861613752}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Eye-4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2197649398153372661}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Eye-6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2595644866014421142}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Eye-3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2403514489755751958}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Eye-1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,6 +254,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dice
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a7accab8fb4801442a906370d1f021af, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -281,7 +285,7 @@ PrefabInstance:
       addedObject: {fileID: -8819339745824792086}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a7accab8fb4801442a906370d1f021af, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -1063163416624823686}
+      addedObject: {fileID: 1626774396166810682}
   m_SourcePrefab: {fileID: 100100000, guid: a7accab8fb4801442a906370d1f021af, type: 3}
 --- !u!4 &3862364145751772223 stripped
 Transform:
@@ -320,14 +324,14 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!64 &-1063163416624823686
-MeshCollider:
+--- !u!65 &1626774396166810682
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4526697165007689349}
-  m_Material: {fileID: 13400000, guid: 69f9a6368b8a24f4b8d20726442307db, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -338,7 +342,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4493585093827132993, guid: a7accab8fb4801442a906370d1f021af, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.02, y: 0.02, z: 0.02}
+  m_Center: {x: 0, y: 0, z: 0}
