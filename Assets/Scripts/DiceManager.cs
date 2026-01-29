@@ -12,6 +12,8 @@ public class DiceManager : MonoBehaviour
     [Header("Dicing Settings")]
     [SerializeField] private float diceForce;
     [SerializeField] private float diceTorque;
+    [SerializeField] private float waitTimeBeforeResult;
+    [SerializeField] private Transform throwPosition;
 
     // unity event to get result
     public UnityEvent<int> OnDiceResult;
@@ -35,23 +37,12 @@ public class DiceManager : MonoBehaviour
         GameObject dice2 = Instantiate(dicePrefab, new Vector3(2, 1, 0), Quaternion.identity);
         diceRigidbodies = new Rigidbody[] { dice1.GetComponent<Rigidbody>(), dice2.GetComponent<Rigidbody>() };
 
-        //StartCoroutine(StartTestRoll());
-
-        OnDiceResult.AddListener(DebugResult);
-    }
-
-    private IEnumerator StartTestRoll()
-    {
-        yield return new WaitForSeconds(2f);
-        RollDice();
         OnDiceResult.AddListener(DebugResult);
     }
 
     private void DebugResult(int result)
     {
         Debug.Log("Dice roll result: " + result);
-        //OnDiceResult.RemoveListener(DebugResult);
-        //StartCoroutine(StartTestRoll());
     }
 
     [ContextMenu("Roll Dice")]
@@ -61,7 +52,9 @@ public class DiceManager : MonoBehaviour
         {
             diceRb.linearVelocity = Vector3.zero;
             diceRb.angularVelocity = Vector3.zero;
-            Vector3 forceDirection = new Vector3(Random.Range(-1f, 1f), 1, Random.Range(-1f, 1f)).normalized;
+            diceRb.transform.position = new Vector3(throwPosition.position.x, throwPosition.position.y, throwPosition.position.z + Random.Range(-3.5f, 3.5f));
+            diceRb.transform.rotation = Random.rotation;
+            Vector3 forceDirection = new Vector3(Random.Range(-3f, -1f), 1f, Random.Range(-1f, 1f)).normalized;
             diceRb.AddForce(forceDirection * diceForce, ForceMode.Impulse);
             diceRb.AddTorque(Random.insideUnitSphere * diceTorque, ForceMode.Impulse);
         }
