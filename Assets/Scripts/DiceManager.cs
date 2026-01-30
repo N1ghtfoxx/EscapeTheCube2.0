@@ -33,9 +33,14 @@ public class DiceManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GameObject dice1 = Instantiate(dicePrefab, new Vector3(-2, 1, 0), Quaternion.identity);
-        GameObject dice2 = Instantiate(dicePrefab, new Vector3(2, 1, 0), Quaternion.identity);
+        GameObject dice1 = Instantiate(dicePrefab, throwPosition.position, Quaternion.identity);
+        GameObject dice2 = Instantiate(dicePrefab, throwPosition.position, Quaternion.identity);
         diceRigidbodies = new Rigidbody[] { dice1.GetComponent<Rigidbody>(), dice2.GetComponent<Rigidbody>() };
+
+        for (int i = 0; i < diceRigidbodies.Length; i++)
+        {
+            diceRigidbodies[i].isKinematic = true;
+        }
 
         OnDiceResult.AddListener(DebugResult);
     }
@@ -47,7 +52,6 @@ public class DiceManager : MonoBehaviour
 
     [ContextMenu("Roll Dice")]
     public void RollDice() {        
-        int total = 0;
         foreach (Rigidbody diceRb in diceRigidbodies)
         {
             diceRb.isKinematic = false;
