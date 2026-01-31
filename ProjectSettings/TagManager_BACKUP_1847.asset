@@ -41,11 +41,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+<<<<<<< HEAD
   - name: Board
     uniqueID: 3760256187
     locked: 0
   - name: Field
     uniqueID: 3916820365
     locked: 0
+=======
+>>>>>>> Dice
   m_RenderingLayers:
   - Default
