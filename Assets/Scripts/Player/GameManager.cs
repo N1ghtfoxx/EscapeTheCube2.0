@@ -1,16 +1,100 @@
+//using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+//using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+using static System.Collections.Specialized.BitVector32;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public static GameManager Instance { get; private set; }
+
+    [SerializeField] private List<Player> players = new List<Player>();
+    [SerializeField] private Field startField;
+    private List<Field> allFields = new List<Field>();
+
+    private int currentPlayerIndex = 0;
+
+    private void Awake()
     {
-        
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        InitializeGame();
+    }
+
+    private void InitializeGame()
+    {
+        // find all fields in the scene
+        allFields = allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
+
+        if (players.Count > 0 && startField != null)
+        {
+            players[0].SetCurrentField(startField);
+        }
+        UpdateClickableFields();
+    }
+
+    // returns the player whose turn it currently is
+    public Player GetCurrentPlayer()
+    {
+        return players[currentPlayerIndex];
+    }
+
+    // switches to the next player
+    public void NextPlayer()
+    {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
+        UpdateClickableFields();
+    }
+
+    // makes fields clickable based on current player position
+    public void UpdateClickableFields()
+    {
+        // first, make all fields non-clickable
+        foreach (Field field in allFields)
+        {
+            field.SetClickable(false);
+        }
+
+        // get current player an their position
+        Player currentPlayer = GetCurrentPlayer();
+        Field currentField = currentPlayer.GetCurrentField();
+
+        // make neighboring fields clickable
+        if (currentField != null)
+        {
+            List<Field> neighbours = currentField.GetNeighbours();
+            foreach (Field neighbour in neighbours)
+            {
+                neighbour.SetClickable(true);
+            }
+        }
+    }
+
+    // returns all fields that currently have players on them
+    public List<Field> GetOccupiedFields()
+    {
+        List<Field> occupied = new List<Field>();
+        foreach (Player player in players)
+        {
+            Field field = player.GetCurrentField();
+            if (field != null && !occupied.Contains(field))
+            {
+                occupied.Add(field);
+            }
+        }
+        return occupied;
+    }
+
+    // returns list of all players in the game
+    public List<Player> GetAllPlayers()
+    {
+        return players;
     }
 }
