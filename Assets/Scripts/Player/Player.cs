@@ -1,5 +1,4 @@
 using UnityEngine;
-using static System.Collections.Specialized.BitVector32;
 
 public class Player : MonoBehaviour
 {
@@ -46,7 +45,7 @@ public class Player : MonoBehaviour
     // changes the player's hydration level
     public void ChangeHydration(int amount)
     {
-        hydration = Mathf.Clamp(hydration * amount, 0, maxHydration);
+        hydration = Mathf.Clamp(hydration + amount, 0, maxHydration);
         OnHydrationChanged();
     }
 

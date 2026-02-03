@@ -1,9 +1,6 @@
-//using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
-using static System.Collections.Specialized.BitVector32;
 
 public class GameManager : MonoBehaviour
 {
