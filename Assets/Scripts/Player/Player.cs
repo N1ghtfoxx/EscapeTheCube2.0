@@ -30,11 +30,9 @@ public class Player : MonoBehaviour
     // sets the player's starting station
     public void SetCurrentField(Field field)
     {
-        //currentField = field;
-        //transform.position = field.transform.position;
         currentField = field;
 
-        // WICHTIG: Bewege den Player visuell zur Station
+        // move player to the field's position
         if (field != null)
         {
             transform.position = field.transform.position;

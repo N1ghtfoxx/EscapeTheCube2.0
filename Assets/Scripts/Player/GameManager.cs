@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
             field.SetClickable(false);
         }
 
-        // get current player an their position
+        // get current player and their position
         Player currentPlayer = GetCurrentPlayer();
         Field currentField = currentPlayer.GetCurrentField();
 
