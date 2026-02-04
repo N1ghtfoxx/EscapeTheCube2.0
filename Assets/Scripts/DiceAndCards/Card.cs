@@ -45,5 +45,8 @@ public class Card : ScriptableObject
     [Tooltip("The effect of the card")]
     public CardEffect cardEffectType;
 
-
+    public override string ToString()
+    {
+        return $"{cardType} - {cardtext} - Effect: {cardEffectType} - Hydration: {hydration} - Suspended Turns: {suspendedTurns}";
+    }
 }
