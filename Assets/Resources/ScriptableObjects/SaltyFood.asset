@@ -13,10 +13,8 @@ MonoBehaviour:
   m_Name: SaltyFood
   m_EditorClassIdentifier: 
   cardType: 0
-  cardtext: Enegydrink
-  cardEffect: Salty Food
+  cardtext: Salty Food
+  cardEffect: -3 Hydration
   hydration: -3
   suspendedTurns: 0
-  hintCard: 0
-  accesCard: 0
-  nextTurnMandatory: 0
+  cardEffectType: 0

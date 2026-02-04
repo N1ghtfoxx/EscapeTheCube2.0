@@ -15,7 +15,6 @@ MonoBehaviour:
   cardType: 0
   cardtext: Lactase Tabletten
   cardEffect: +3 Hydration
-  hydration: 0
-  hintCard: 0
-  accesCard: 0
+  hydration: 3
   suspendedTurns: 0
+  cardEffectType: 0

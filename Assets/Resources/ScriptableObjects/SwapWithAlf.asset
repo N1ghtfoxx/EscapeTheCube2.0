@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SwapWithAlf
   m_EditorClassIdentifier: 
   cardType: 1
-  cardtext: Swap positions with Alf
-  cardEffect: 
+  cardtext: 
+  cardEffect: Swap positions with Alf
   hydration: 0
   suspendedTurns: 0
   cardEffectType: 5
