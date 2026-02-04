@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 
@@ -30,8 +31,8 @@ public class CardManager : MonoBehaviour
         ItemCardDictionary.Clear();
         ActionCardDictionary.Clear();
 
-        RegisterCategory("ScriptableObjects", ItemCardDictionary, CardType.ItemCard);
-        RegisterCategory("ScriptableObjects", ActionCardDictionary, CardType.ActionCard);
+        RegisterCategory("ScriptableObjects/ItemCards", ItemCardDictionary, CardType.ItemCard);
+        RegisterCategory("ScriptableObjects/ActionCards", ActionCardDictionary, CardType.ActionCard);
 
     }
 
@@ -45,30 +46,6 @@ public class CardManager : MonoBehaviour
             if (data == null || data.cardType != ct) continue;
             categoryList.Add(data);
         }
-    }
-
-
-    public void DrawCard(CardType ct)
-    {
-        Player currPlayer = GameManager.Instance.GetCurrentPlayer();
-        Debug.Log("Drawing Card for: " + currPlayer.GetPlayerName());
-
-        switch (ct)
-        {
-            case CardType.ItemCard:
-                {
-                    HandleItemCard();
-                    break;
-                }
-            case CardType.ActionCard:
-                {
-                    HandleActionCard();
-                    break;
-                }
-                    
-        }
-
-
     }
 
     public void HandleItemCard()
@@ -88,22 +65,30 @@ public class CardManager : MonoBehaviour
         switch (drawnCard.cardEffectType)
         {
             case CardEffect.HintCard:
+                // HinweisKarte: +1 Hinweiskarte
                 Debug.Log($"{currPlayer.GetPlayerName()} received a hint card.");
-                // TODO: Track hint cards in Player system
                 break;
 
             case CardEffect.AccesCard:
+                // Zugangkarte: +1 Zugangskarte
                 Debug.Log($"{currPlayer.GetPlayerName()} received an access card.");
-                // TODO: Track access cards in Player system
                 break;
 
             case CardEffect.NextTurnMandatory:
+                // Energydrink: nächster Zug verpflichtend
                 Debug.Log($"{currPlayer.GetPlayerName()}'s next turn is mandatory.");
-                // TODO: Implement mandatory turn in Player system
+                break;
+
+            case CardEffect.SecretPassage:
+                // Geheimgang: Direkter Teleport zu benachbarter Theke
+                Debug.Log($"{currPlayer.GetPlayerName()} activates secret passage - teleporting to adjacent counter.");
+                // TODO: Implement secret passage teleportation to adjacent counter
                 break;
 
             case CardEffect.None:
-                Debug.Log($"Card has no additional effect.");
+                // Cola, LactaseTabletten, GreenBanana, Pommes, Nothing, Rotten Steak, SaltyFood, StoneRice
+                // Only hydration changes are applied, no additional effects
+                Debug.Log($"Card has no additional effect - only hydration change applied.");
                 break;
 
             default:
@@ -122,64 +107,70 @@ public class CardManager : MonoBehaviour
         switch (drawnCard.cardEffectType)
         {
             case CardEffect.SpawnAlf:
+                // SpawnAlf: Alf's position wird ausgewürfelt
                 Debug.Log($"Spawning Alf via dice roll...");
                 DiceManager.Instance.RollDice();
                 break;
 
             case CardEffect.SwapPositionWithAlf:
+                // SwapWithAlf: Swap positions with Alf
                 Debug.Log($"{currPlayer.GetPlayerName()} swapping position with Alf...");
-                // TODO: Implement position swapping logic
+                // TODO: Implement position swapping logic with Alf
                 break;
 
             case CardEffect.BlockAlf:
-                Debug.Log($"Blocking Alf for one round...");
-                // TODO: Implement Alf blocking
+                // UteHelps: Blockiere Alf für eine Runde
+                Debug.Log($"Alf is blocked for one round...");
+                // TODO: Implement Alf blocking for one turn
                 break;
 
             case CardEffect.FreeMoveTowardsExit:
-                Debug.Log($"{currPlayer.GetPlayerName()} can move freely towards exit.");
-                // TODO: Implement free move logic
+                // Feueralarm: 1 freie bewegung richtung Ausgang
+                Debug.Log($"{currPlayer.GetPlayerName()} has one free move towards exit.");
+                // TODO: Implement free move towards exit logic
                 break;
 
             case CardEffect.LoseHintCard:
-                Debug.Log($"{currPlayer.GetPlayerName()} lost a hint card.");
+                // RiceNoPommes: Verliere einen Hinweis
+                Debug.Log($"{currPlayer.GetPlayerName()} loses a hint card.");
                 // TODO: Remove hint card from Player
                 break;
 
             case CardEffect.CallBerta:
+                // AlfCalls4Reinforcement: Berta joined the game
                 Debug.Log($"Calling Berta to join the game...");
-                // TODO: Implement calling Berta
+                // TODO: Implement calling Berta (new enemy character)
                 break;
 
             case CardEffect.NoHydrationLoss4Everyone:
-                Debug.Log($"No hydration loss for everyone this turn.");
+                // Stromausfall: alle Spieler können sich ohne Hydrationsverlust bewegen
+                Debug.Log($"Power outage! No hydration loss for all players this turn.");
                 // TODO: Implement no hydration loss for all players this turn
                 break;
 
             case CardEffect.PlayerWithMostAccessCardsLosesOne:
+                // SpeiseplanAenderung: Spieler mit den meisten Hinweiskarten verliert einen
+                // Note: The description says "Hint Cards" but enum is "AccessCards" - following description
                 List<Player> allPlayers = GameManager.Instance.GetAllPlayers();
-                Debug.Log($"Finding player with most access cards...");
-                // TODO: Track access cards and remove one from player with most
+                Debug.Log($"Finding player with most hint cards...");
+                // TODO: Track hint cards and remove one from player with most hint cards
                 break;
 
             case CardEffect.Distraction:
+                // Ablenkungsmanoever: Alf für eine Runde einfrieren
                 Debug.Log($"Distraction effect activated - Alf frozen for one round.");
-                // TODO: Implement distraction effect (likely freezes Alf or affects movement)
-                break;
-
-            case CardEffect.SecretPassage:
-                Debug.Log($"Secret passage revealed - player can teleport to adjacent counter.");
-                // TODO: Implement secret passage teleportation
+                // TODO: Implement distraction effect (freezes Alf for one turn)
                 break;
 
             case CardEffect.Hydration4All:
+                // HappyHour: Alle Spieler erhalten +2 Hydration
                 allPlayers = GameManager.Instance.GetAllPlayers();
                 foreach (Player player in allPlayers)
                 {
                     if (drawnCard.hydration != 0)
                     {
                         player.ChangeHydration(drawnCard.hydration);
-                        Debug.Log($"{player.GetPlayerName()} received {drawnCard.hydration} hydration.");
+                        Debug.Log($"{player.GetPlayerName()} received {drawnCard.hydration} hydration from Happy Hour.");
                     }
                 }
                 break;
