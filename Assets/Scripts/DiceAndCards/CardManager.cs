@@ -75,7 +75,7 @@ public class CardManager : MonoBehaviour
                 break;
 
             case CardEffect.NextTurnMandatory:
-                // Energydrink: nächster Zug verpflichtend
+                // Energydrink: nï¿½chster Zug verpflichtend
                 Debug.Log($"{currPlayer.GetPlayerName()}'s next turn is mandatory.");
                 break;
 
@@ -107,7 +107,7 @@ public class CardManager : MonoBehaviour
         switch (drawnCard.cardEffectType)
         {
             case CardEffect.SpawnAlf:
-                // SpawnAlf: Alf's position wird ausgewürfelt
+                // SpawnAlf: Alf's position wird ausgewÃ¼rfelt
                 Debug.Log($"Spawning Alf via dice roll...");
                 DiceManager.Instance.RollDice();
                 break;
@@ -119,7 +119,7 @@ public class CardManager : MonoBehaviour
                 break;
 
             case CardEffect.BlockAlf:
-                // UteHelps: Blockiere Alf für eine Runde
+                // UteHelps: Blockiere Alf fÃ¼r eine Runde
                 Debug.Log($"Alf is blocked for one round...");
                 // TODO: Implement Alf blocking for one turn
                 break;
@@ -143,7 +143,7 @@ public class CardManager : MonoBehaviour
                 break;
 
             case CardEffect.NoHydrationLoss4Everyone:
-                // Stromausfall: alle Spieler können sich ohne Hydrationsverlust bewegen
+                // Stromausfall: alle Spieler kï¿½nnen sich ohne Hydrationsverlust bewegen
                 Debug.Log($"Power outage! No hydration loss for all players this turn.");
                 // TODO: Implement no hydration loss for all players this turn
                 break;
@@ -157,7 +157,7 @@ public class CardManager : MonoBehaviour
                 break;
 
             case CardEffect.Distraction:
-                // Ablenkungsmanoever: Alf für eine Runde einfrieren
+                // Ablenkungsmanoever: Alf fï¿½r eine Runde einfrieren
                 Debug.Log($"Distraction effect activated - Alf frozen for one round.");
                 // TODO: Implement distraction effect (freezes Alf for one turn)
                 break;
