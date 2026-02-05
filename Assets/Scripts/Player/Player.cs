@@ -8,6 +8,15 @@ public class Player : MonoBehaviour
 
     private Field currentField;
 
+    [Header("Card Inventory")]
+    private int hintCards = 0;
+    private int accessCards = 0;
+
+    [Header("Special States")]
+    private bool nextTurnMandatory = false;
+    private bool hasVisitedWC = false;
+    private bool noHydrationLossThisTurn = false;
+
     // moves player to a new field
     public void MoveToField(Field newField)
     {
