@@ -14,6 +14,7 @@ public class DiceManager : MonoBehaviour
     [SerializeField] private float diceTorque;
     [SerializeField] private float waitTimeBeforeResult;
     [SerializeField] private Transform throwPosition;
+    [SerializeField] private float verticality;
 
     // unity event to get result
     public UnityEvent<int> OnDiceResult;
@@ -59,7 +60,7 @@ public class DiceManager : MonoBehaviour
             diceRb.angularVelocity = Vector3.zero;
             diceRb.transform.position = new Vector3(throwPosition.position.x, throwPosition.position.y, throwPosition.position.z + Random.Range(-3.5f, 3.5f));
             diceRb.transform.rotation = Random.rotation;
-            Vector3 forceDirection = new Vector3(Random.Range(-3f, -1f), 1f, Random.Range(-1f, 1f)).normalized;
+            Vector3 forceDirection = new Vector3(Random.Range(-3f, -1f), verticality, Random.Range(-1f, 1f)).normalized;
             diceRb.AddForce(forceDirection * diceForce, ForceMode.Impulse);
             diceRb.AddTorque(Random.insideUnitSphere * diceTorque, ForceMode.Impulse);
         }
