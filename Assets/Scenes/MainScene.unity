@@ -201,7 +201,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 138969511}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 521218529}
+        m_TargetAssemblyTypeName: CardManager, Assembly-CSharp
+        m_MethodName: HandleActionCard
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &138969511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -534,6 +546,50 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
   m_PrefabInstance: {fileID: 354442566}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &521218528
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 521218530}
+  - component: {fileID: 521218529}
+  m_Layer: 0
+  m_Name: CardManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &521218529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 521218528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 681ba985bf41c6140b40d329ff8e5ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &521218530
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 521218528}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.469978, y: 5.640415, z: -1.0492285}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &529872774
 GameObject:
   m_ObjectHideFlags: 0
@@ -1847,7 +1903,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1287042017}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 521218529}
+        m_TargetAssemblyTypeName: CardManager, Assembly-CSharp
+        m_MethodName: HandleItemCard
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1287042017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2868,6 +2936,7 @@ MonoBehaviour:
   diceTorque: 0.1
   waitTimeBeforeResult: 1
   throwPosition: {fileID: 1339571218}
+  verticality: 0
   OnDiceResult:
     m_PersistentCalls:
       m_Calls: []
@@ -2899,3 +2968,4 @@ SceneRoots:
   - {fileID: 889910120}
   - {fileID: 550457858}
   - {fileID: 596512721}
+  - {fileID: 521218530}
