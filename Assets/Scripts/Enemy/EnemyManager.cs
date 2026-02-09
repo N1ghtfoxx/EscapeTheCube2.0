@@ -9,9 +9,9 @@ public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager Instance;
 
-    [SerializeField] private List<GameObject> enemies;
+    [SerializeField] private List<Enemy> enemies;
     [SerializeField] private GameObject fields;
-    private List<Transform> theFields;
+    private List<Field> theFields;
 
     private EnemyType enemyToTeleport;
 
@@ -26,7 +26,7 @@ public class EnemyManager : MonoBehaviour
             Destroy(gameObject);
         }
         
-        theFields = fields.GetComponentsInChildren<Transform>().ToList();
+        theFields = fields.GetComponentsInChildren<Field>().ToList();
         var toRemove = theFields.Where(tmp => tmp.name.Equals("Outline") || tmp.name.Equals("Fields")).ToArray();
         
         foreach (var tmp in toRemove)   
@@ -50,7 +50,7 @@ public class EnemyManager : MonoBehaviour
             Debug.Log(tmp.name);    
         }
         
-        enemies[0].transform.position = theFields[7].position;
+        enemies[0].CurrentField = theFields[7];
         
     }
 
@@ -61,15 +61,28 @@ public class EnemyManager : MonoBehaviour
         enemyToTeleport = et;
         
     }
-
     
     private void TeleportEnemy(int fieldNumber)
     {
         int comp = enemyToTeleport.CompareTo(EnemyType.Alf);
-        GameObject enem = enemies[comp];
-        enem.transform.position = theFields[fieldNumber-1].position;     
+        Enemy enem = enemies[comp];
+        enem.CurrentField = theFields[fieldNumber-1];     
         DiceManager.Instance.OnDiceResult.RemoveListener(TeleportEnemy);
         
+    }
+
+    public void SwapPlayerWithAlf(Player currPlayer)
+    {
+        // save the positions of the player and the enemy in temporary variables
+        var tmp = enemies[0].CurrentField;
+        var tmpP = currPlayer.GetCurrentField();
+        
+        // swap the positions
+        enemies[0].gameObject.transform.position = new Vector3(20, 20, 0); // move Alf to a temporary position to avoid overlap during the swap
+        currPlayer.SetCurrentField(tmp);
+        currPlayer.GetCurrentField().OnPlayerArrived(currPlayer);
+        GameManager.Instance.UpdateClickableFields();
+        enemies[0].CurrentField = tmpP;
     }
     
 }

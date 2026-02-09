@@ -116,6 +116,9 @@ public class CardManager : MonoBehaviour
                 // SwapWithAlf: Swap positions with Alf
                 Debug.Log($"{currPlayer.GetPlayerName()} swapping position with Alf...");
                 // TODO: Implement position swapping logic with Alf
+
+                EnemyManager.Instance.SwapPlayerWithAlf(currPlayer);
+                
                 break;
 
             case CardEffect.BlockAlf:

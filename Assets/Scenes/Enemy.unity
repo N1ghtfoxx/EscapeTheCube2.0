@@ -1660,11 +1660,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4216c2de3813f1f4990ef971866c5321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &936751024 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 576109059244410879, guid: 89e3c79e645ef124880e5ce1bac68f22, type: 3}
+--- !u!114 &936751027 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6427569341738630202, guid: 89e3c79e645ef124880e5ce1bac68f22, type: 3}
   m_PrefabInstance: {fileID: 1397591496}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76e74afd14c348f6979dbc94974cc017, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &981044567 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2184727949319093021, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -2708,7 +2714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemies:
-  - {fileID: 936751024}
+  - {fileID: 936751027}
   fields: {fileID: 1759851700}
 --- !u!4 &1565224220
 Transform:
