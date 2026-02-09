@@ -2883,6 +2883,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719152792}
   m_CullTransparentMesh: 1
+--- !u!1 &1759851700 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6876443155875570323, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
+  m_PrefabInstance: {fileID: 691515119}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1838903399
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2998,6 +3003,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1862803334}
+  - component: {fileID: 1862803335}
   m_Layer: 6
   m_Name: Alf
   m_TagString: Untagged
@@ -3021,6 +3027,19 @@ Transform:
   - {fileID: 1269081378}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1862803335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862803333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1eb5ef9a8846dbb0a00470ae8a750d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Fields: {fileID: 1759851700}
 --- !u!1 &2087293382
 GameObject:
   m_ObjectHideFlags: 0
