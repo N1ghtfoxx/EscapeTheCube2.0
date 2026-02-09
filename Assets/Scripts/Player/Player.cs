@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Player : MonoBehaviour
 {
@@ -20,6 +21,17 @@ public class Player : MonoBehaviour
     // moves player to a new field
     public void MoveToField(Field newField)
     {
+        if (!noHydrationLossThisTurn)
+        {
+            ChangeHydration(-1); // assume each move costs 1 hydration
+            Debug.Log($"{GetPlayerName()} lost 1 hydration due to movement. Current: {hydration}");
+        }
+        else
+        {
+            Debug.Log($"{GetPlayerName()} moved without hydration loss this turn.");
+            noHydrationLossThisTurn = false; // reset flag
+        }
+
         currentField = newField;
         transform.position = newField.transform.position;
 
@@ -45,7 +57,6 @@ public class Player : MonoBehaviour
         if (field != null)
         {
             transform.position = field.transform.position;
-
         }
     }
 
@@ -80,4 +91,142 @@ public class Player : MonoBehaviour
     {
         return playerName;
     }
+
+    #region Hint Card Management
+
+    public int GetHintCards()
+    {
+        return hintCards;
+    }
+
+    public void AddHintCard(int amount = 1)
+    {
+        hintCards += amount;
+        Debug.Log($"{GetPlayerName()} gained {amount} hint card(s). Total: {hintCards}");
+    }
+
+    public void RemoveHintCard(int amount = 1)
+    {
+        hintCards = Mathf.Max(0, hintCards - amount);
+        Debug.Log($"{GetPlayerName()} lost {amount} hint card(s). Total: {hintCards}");
+    }
+
+    #endregion
+
+    #region Access Card Management
+
+    public int GetAccessCards()
+    {
+        return accessCards;
+    }
+
+    public bool HasAccessCard()
+    {
+        return accessCards > 0;
+    }
+
+    public void AddAccessCard(int amount = 1)
+    {
+        accessCards += amount;
+        Debug.Log($"{GetPlayerName()} gained {amount} access card(s). Total: {accessCards}");
+    }
+
+    public void ConsumeAccessCard(int amount = 1)
+    {
+        accessCards = Mathf.Max(0, accessCards - amount);
+        Debug.Log($"{GetPlayerName()} consumed {amount} access card(s). Total: {accessCards}");
+    }
+
+    #endregion
+
+    #region WC and Win Conditions
+
+    public bool CanEnterWC()
+    {
+        return hintCards >= 3;
+    }
+
+    public bool HasVisitedWC()
+    {
+        return hasVisitedWC;
+    }
+
+    public void SetHasVisitedWC(bool value)
+    {
+        hasVisitedWC = value;
+    }
+
+    public bool CanWin()
+    {
+        return hintCards >= 3 && hasVisitedWC;
+    }
+
+    #endregion
+
+    #region Special Effect Activators
+
+    // public for CardManager to call
+
+    public void SetNoHydrationLossThisTurn(bool value)
+    {
+        noHydrationLossThisTurn = value;
+        if (value)
+        {
+            Debug.Log($"{GetPlayerName()} will move without hydration loss this turn.");
+        }
+    }
+
+    public void SetNextTurnMandatory(bool value)
+    {
+        nextTurnMandatory = value;
+        if (value)
+        {
+            Debug.Log($"{GetPlayerName()}'s next turn is mandatory.");
+        }
+    }
+
+    public bool IsNextTurnMandatory()
+    {
+        return nextTurnMandatory;
+    }
+
+    // Placeholder for Secret Passage (teleport to adjacent Theke/counter)
+    // Assuming "adjacent Theke" means a specific Field type like Theke1;
+    // implement logic here or in GameManager
+    public void ActivateSecretPassage()
+    {
+        // TODO: Logic to find and teleport to an adjacent Theke (e.g., Theke1 or similar)
+        // For example: Find nearest Theke1 from currentField neighbours
+        Field targetTheke = null;
+        foreach (Field neighbour in currentField.GetNeighbours())
+        {
+            if (neighbour is Theke1) // Assuming Theke1 is the "counter"
+            {
+                targetTheke = neighbour;
+                break;
+            }
+        }
+        if (targetTheke != null)
+        {
+            MoveToField(targetTheke); // Use MoveToField to handle movement
+            Debug.Log($"{GetPlayerName()} teleported to adjacent Theke via secret passage.");
+        }
+        else
+        {
+            Debug.Log($"{GetPlayerName()} no adjacent Theke found for secret passage.");
+        }
+    }
+
+    // Placeholder for Free Move Towards Exit
+    public void ActivateFreeMoveTowardsExit()
+    {
+        // TODO: Logic to move one step towards Exit without cost
+        // This might require pathfinding or predefined paths to Exit
+        // For now, assume we set noHydrationLossThisTurn and prompt a move
+        SetNoHydrationLossThisTurn(true);
+        Debug.Log($"{GetPlayerName()} can make one free move towards the exit.");
+        // Additional logic if automatic move is needed
+    }
+
+    #endregion
 }

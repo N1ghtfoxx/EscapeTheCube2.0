@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     private void InitializeGame()
     {
         // find all fields in the scene
-        allFields = allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
+        allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
 
         if (players.Count > 0 && startField != null)
         {
@@ -46,6 +46,16 @@ public class GameManager : MonoBehaviour
     // switches to the next player
     public void NextPlayer()
     {
+        // Check if current player has mandatory next turn (e.g., cannot skip)
+        Player currentPlayer = GetCurrentPlayer();
+        if (currentPlayer.IsNextTurnMandatory())
+        {
+            // If mandatory, do not advance; reset flag and force move
+            currentPlayer.SetNextTurnMandatory(false);
+            Debug.Log($"{currentPlayer.GetPlayerName()} must take their mandatory turn.");
+            // TODO: If turns can be skipped, prevent skip here; otherwise, just log
+            return;
+        }
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
         UpdateClickableFields();
     }
@@ -93,5 +103,37 @@ public class GameManager : MonoBehaviour
     public List<Player> GetAllPlayers()
     {
         return players;
+    }
+
+    // Additional method for Bistro entry (called from Bistro.cs)
+    public void TryBistroEntry(Player player)
+    {
+        if (player.HasAccessCard())
+        {
+            player.ConsumeAccessCard(); // Assume consume on successful entry
+            Debug.Log($"{player.GetPlayerName()} entered Bistro using an access card.");
+            // TODO: Additional Bistro logic if needed
+        }
+        else
+        {
+            Debug.Log($"{player.GetPlayerName()} cannot enter Bistro without access card.");
+        }
+    }
+
+    // Helper for finding player with most hint cards (for CardManager)
+    public Player GetPlayerWithMostHintCards()
+    {
+        Player maxPlayer = null;
+        int maxHints = -1;
+        foreach (Player player in players)
+        {
+            int hints = player.GetHintCards();
+            if (hints > maxHints)
+            {
+                maxHints = hints;
+                maxPlayer = player;
+            }
+        }
+        return maxPlayer;
     }
 }
