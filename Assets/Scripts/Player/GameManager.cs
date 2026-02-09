@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -135,5 +135,25 @@ public class GameManager : MonoBehaviour
             }
         }
         return maxPlayer;
+    }
+
+    // power outage base
+    public void EnableNoHydrationLossForAllPlayersThisTurn()
+    {
+        Debug.LogError("=== POWER OUTAGE START – Methode wird erreicht ===");   
+        Debug.Log("Spieler in Liste: " + players.Count);
+
+        foreach (Player player in players)
+        {
+            Debug.Log("Versuche Setter bei: " + (player != null ? player.name : "NULL PLAYER"));
+
+            if (player != null)
+            {
+                player.SetNoHydrationLossThisTurn(true);
+                Debug.Log("Setter-Aufruf für " + player.name + " abgeschlossen");
+            }
+        }
+
+        Debug.LogError("=== POWER OUTAGE ENDE ===");
     }
 }

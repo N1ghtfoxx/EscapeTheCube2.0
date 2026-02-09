@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
 public class Player : MonoBehaviour
@@ -21,17 +21,19 @@ public class Player : MonoBehaviour
     // moves player to a new field
     public void MoveToField(Field newField)
     {
+        Debug.LogWarning($"{GetPlayerName()} - MoveToField aufgerufen | Flag-Wert = {noHydrationLossThisTurn} | Hydration vor Move: {GetHydration()}");
+
         if (!noHydrationLossThisTurn)
         {
-            ChangeHydration(-1); // assume each move costs 1 hydration
-            Debug.Log($"{GetPlayerName()} lost 1 hydration due to movement. Current: {hydration}");
+            ChangeHydration(-1);
+            Debug.Log("-1 Hydration abgezogen");
         }
         else
         {
-            Debug.Log($"{GetPlayerName()} moved without hydration loss this turn.");
-            noHydrationLossThisTurn = false; // reset flag
+            Debug.Log("KEIN Hydrationsverlust – Flag war true");
+            noHydrationLossThisTurn = false;
+            Debug.Log("Flag zurückgesetzt auf false");
         }
-
         currentField = newField;
         transform.position = newField.transform.position;
 
@@ -166,15 +168,17 @@ public class Player : MonoBehaviour
     #region Special Effect Activators
 
     // public for CardManager to call
-
     public void SetNoHydrationLossThisTurn(bool value)
     {
         noHydrationLossThisTurn = value;
-        if (value)
-        {
-            Debug.Log($"{GetPlayerName()} will move without hydration loss this turn.");
-        }
+        Debug.LogError("SETTER LÄUFT! Bei " + GetPlayerName() + " -> Wert = " + value);
     }
+
+    public bool GetNoHydrationLossThisTurn()
+    {
+        return noHydrationLossThisTurn;
+    }
+
 
     public void SetNextTurnMandatory(bool value)
     {
