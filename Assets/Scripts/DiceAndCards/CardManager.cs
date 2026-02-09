@@ -109,7 +109,7 @@ public class CardManager : MonoBehaviour
             case CardEffect.SpawnAlf:
                 // SpawnAlf: Alf's position wird ausgewürfelt
                 Debug.Log($"Spawning Alf via dice roll...");
-                Enemy.Instance.RollForTeleport();
+                EnemyManager.Instance.RollForTeleport(EnemyType.Alf);
                 break;
 
             case CardEffect.SwapPositionWithAlf:
