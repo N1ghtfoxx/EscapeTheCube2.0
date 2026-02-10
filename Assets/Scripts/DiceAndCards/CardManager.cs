@@ -143,6 +143,7 @@ public class CardManager : MonoBehaviour
                 // AlfCalls4Reinforcement: Berta joined the game
                 Debug.Log($"Calling Berta to join the game...");
                 // TODO: Implement calling Berta (new enemy character)
+                EnemyManager.Instance.RollForTeleport(EnemyType.Bertha);
                 break;
 
             case CardEffect.NoHydrationLoss4Everyone:

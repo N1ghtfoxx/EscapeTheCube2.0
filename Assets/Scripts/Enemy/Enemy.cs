@@ -2,6 +2,7 @@
 
 public class Enemy : MonoBehaviour
 {
+    [SerializeField] private EnemyType enemyType;
     private Field currentField;
     
     public Field CurrentField
@@ -10,7 +11,16 @@ public class Enemy : MonoBehaviour
         set
         {
             currentField = value;
-            transform.position = value.transform.position;
+            if (value != null)
+                transform.position = value.transform.position;
+            else
+            {
+                transform.position = new Vector3(20, 20, 0);  
+                if (enemyType == EnemyType.Bertha)
+                {
+                    gameObject.GetComponent<EnemyBertha>().isActive = false;
+                }
+            }
         }
     }
     

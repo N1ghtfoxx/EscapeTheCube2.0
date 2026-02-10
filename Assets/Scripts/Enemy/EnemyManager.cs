@@ -56,10 +56,21 @@ public class EnemyManager : MonoBehaviour
 
     public void RollForTeleport(EnemyType et)
     {
+        enemyToTeleport = et;
+        Debug.Log("enemyToTeleport: " + enemyToTeleport);
+        if (enemyToTeleport == EnemyType.Bertha)
+        {
+            EnemyBertha bärtha = enemies[1].GetComponent<EnemyBertha>();
+            if (bärtha.isActive)
+            {
+                Debug.Log("Bertha is already active, cannot teleport.");
+                return;
+            }
+            bärtha.isActive = true;
+        }
+        
         DiceManager.Instance.OnDiceResult.AddListener(TeleportEnemy);
         DiceManager.Instance.RollDice();
-        enemyToTeleport = et;
-        
     }
     
     private void TeleportEnemy(int fieldNumber)
@@ -68,7 +79,7 @@ public class EnemyManager : MonoBehaviour
         Enemy enem = enemies[comp];
         enem.CurrentField = theFields[fieldNumber-1];     
         DiceManager.Instance.OnDiceResult.RemoveListener(TeleportEnemy);
-        
+
     }
 
     public void SwapPlayerWithAlf(Player currPlayer)
