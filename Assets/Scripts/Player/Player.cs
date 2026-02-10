@@ -2,9 +2,15 @@
 
 public class Player : MonoBehaviour
 {
+    #region Serialized Fields
+
     [SerializeField] private string playerName;
     [SerializeField] private int hydration = 10;
     [SerializeField] private int maxHydration = 10;
+
+    #endregion
+
+    #region Private Fields
 
     private Field currentField;
 
@@ -13,13 +19,22 @@ public class Player : MonoBehaviour
     private int accessCards = 0;
 
     [Header("Special States")]
-    private bool nextTurnMandatory = false;
+    private bool nextTurnMandatory = false; // Energy Drink effect
     private bool hasVisitedWC = false;
 
-    // moves player to a new field
+    #endregion
+
+    #region Movement
+
+    /// <summary>
+    /// Moves player to a new field
+    /// Handles hydration loss (unless Power Outage is active)
+    /// Resets Energy Drink mandatory turn flag if active
+    /// Triggers field arrival events and player switching
+    /// </summary>
     public void MoveToField(Field newField)
     {
-        // signal that player moved this turn
+        // Signal that player moved this turn
         GameManager.Instance.SetPlayerMoved(true);
 
         // Check if power outage is active (global effect)
@@ -37,7 +52,7 @@ public class Player : MonoBehaviour
             Debug.Log($"{GetPlayerName()} moved without hydration loss (Power Outage active).");
         }
 
-        // reset mandatory turn flag after movement
+        // Reset mandatory turn flag after movement (Energy Drink effect)
         if (nextTurnMandatory)
         {
             nextTurnMandatory = false;
@@ -47,76 +62,111 @@ public class Player : MonoBehaviour
         currentField = newField;
         transform.position = newField.transform.position;
 
-        // notify the field that player arrived
+        // Notify the field that player arrived
         newField.OnPlayerArrived(this);
 
-        // switch to the next player
+        // Switch to the next player
         GameManager.Instance.NextPlayer();
     }
 
-    // returns the field the player is currently on
+    /// <summary>
+    /// Returns the field the player is currently on
+    /// </summary>
     public Field GetCurrentField()
     {
         return currentField;
     }
 
-    // sets the player's starting station
+    /// <summary>
+    /// Sets the player's starting field (called during initialization)
+    /// Moves player to the field's position
+    /// </summary>
     public void SetCurrentField(Field field)
     {
         currentField = field;
 
-        // move player to the field's position
+        // Move player to the field's position
         if (field != null)
         {
             transform.position = field.transform.position;
         }
     }
 
-    // changes the player's hydration level
+    #endregion
+
+    #region Hydration Management
+
+    /// <summary>
+    /// Changes the player's hydration level
+    /// Automatically clamps between 0 and maxHydration
+    /// </summary>
     public void ChangeHydration(int amount)
     {
         hydration = Mathf.Clamp(hydration + amount, 0, maxHydration);
         OnHydrationChanged();
     }
 
-    // returns current hydration value 
+    /// <summary>
+    /// Returns current hydration value
+    /// </summary>
     public int GetHydration()
     {
         return hydration;
     }
 
-    // returns max hydration value
+    /// <summary>
+    /// Returns max hydration value
+    /// </summary>
     public int GetMaxHydration()
     {
         return maxHydration;
     }
 
-    // called when hydration changes
-    // - can be used for UI updates or other systems
+    /// <summary>
+    /// Called when hydration changes
+    /// Can be used for UI updates or other systems
+    /// </summary>
     protected virtual void OnHydrationChanged()
     {
-        // empty by default - can be extended by other systems
+        // Empty by default - can be extended by other systems
     }
 
-    // returns the player's name
+    #endregion
+
+    #region Player Info
+
+    /// <summary>
+    /// Returns the player's name
+    /// </summary>
     public string GetPlayerName()
     {
         return playerName;
     }
 
+    #endregion
+
     #region Hint Card Management
 
+    /// <summary>
+    /// Returns current number of hint cards
+    /// </summary>
     public int GetHintCards()
     {
         return hintCards;
     }
 
+    /// <summary>
+    /// Adds hint cards to player's inventory (called by CardManager)
+    /// </summary>
     public void AddHintCard(int amount = 1)
     {
         hintCards += amount;
         Debug.Log($"{GetPlayerName()} gained {amount} hint card(s). Total: {hintCards}");
     }
 
+    /// <summary>
+    /// Removes hint cards from player's inventory (called by CardManager)
+    /// </summary>
     public void RemoveHintCard(int amount = 1)
     {
         hintCards = Mathf.Max(0, hintCards - amount);
@@ -127,22 +177,34 @@ public class Player : MonoBehaviour
 
     #region Access Card Management
 
+    /// <summary>
+    /// Returns current number of access cards
+    /// </summary>
     public int GetAccessCards()
     {
         return accessCards;
     }
 
+    /// <summary>
+    /// Checks if player has at least one access card
+    /// </summary>
     public bool HasAccessCard()
     {
         return accessCards > 0;
     }
 
+    /// <summary>
+    /// Adds access cards to player's inventory (called by CardManager)
+    /// </summary>
     public void AddAccessCard(int amount = 1)
     {
         accessCards += amount;
         Debug.Log($"{GetPlayerName()} gained {amount} access card(s). Total: {accessCards}");
     }
 
+    /// <summary>
+    /// Consumes access cards from player's inventory (called by Bistro.cs)
+    /// </summary>
     public void ConsumeAccessCard(int amount = 1)
     {
         accessCards = Mathf.Max(0, accessCards - amount);
@@ -153,21 +215,33 @@ public class Player : MonoBehaviour
 
     #region WC and Win Conditions
 
+    /// <summary>
+    /// Checks if player can enter WC (requires 3 hint cards)
+    /// </summary>
     public bool CanEnterWC()
     {
         return hintCards >= 3;
     }
 
+    /// <summary>
+    /// Checks if player has visited the WC
+    /// </summary>
     public bool HasVisitedWC()
     {
         return hasVisitedWC;
     }
 
+    /// <summary>
+    /// Sets WC visit status (called by WC.cs)
+    /// </summary>
     public void SetHasVisitedWC(bool value)
     {
         hasVisitedWC = value;
     }
 
+    /// <summary>
+    /// Checks if player meets win conditions (3 hint cards + WC visit)
+    /// </summary>
     public bool CanWin()
     {
         return hintCards >= 3 && hasVisitedWC;
@@ -175,23 +249,37 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    #region Special Effect Activators
+    #region Card Effect - Energy Drink (Mandatory Turn)
 
+    /// <summary>
+    /// Sets whether next turn is mandatory (called by CardManager for Energy Drink effect)
+    /// When true, player cannot skip movement - must move before drawing cards
+    /// </summary>
     public void SetNextTurnMandatory(bool value)
     {
         nextTurnMandatory = value;
         if (value)
         {
-            Debug.Log($"{GetPlayerName()}'s next turn is mandatory.");
+            Debug.Log($"{GetPlayerName()}'s next turn is mandatory (Energy Drink effect).");
         }
     }
 
+    /// <summary>
+    /// Checks if next turn is mandatory (called by GameManager)
+    /// </summary>
     public bool IsNextTurnMandatory()
     {
         return nextTurnMandatory;
     }
 
-    // Placeholder for Secret Passage (teleport to adjacent Theke/counter)
+    #endregion
+
+    #region Card Effect - Secret Passage
+
+    /// <summary>
+    /// Activates secret passage effect (called by CardManager)
+    /// Teleports player to adjacent Theke (counter) field if available
+    /// </summary>
     public void ActivateSecretPassage()
     {
         Field targetTheke = null;
@@ -203,6 +291,7 @@ public class Player : MonoBehaviour
                 break;
             }
         }
+
         if (targetTheke != null)
         {
             MoveToField(targetTheke);
@@ -212,16 +301,6 @@ public class Player : MonoBehaviour
         {
             Debug.Log($"{GetPlayerName()} no adjacent Theke found for secret passage.");
         }
-    }
-
-    // Placeholder for Free Move Towards Exit
-    // Note: This should be handled by CardManager directly calling the movement logic
-    // without triggering hydration loss through the power outage system
-    public void ActivateFreeMoveTowardsExit()
-    {
-        Debug.Log($"{GetPlayerName()} can make one free move towards the exit.");
-        // TODO: CardManager should handle this by temporarily activating power outage
-        // or by directly moving the player without calling MoveToField
     }
 
     #endregion

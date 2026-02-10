@@ -4,20 +4,9 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    #region Singleton
+
     public static GameManager Instance { get; private set; }
-
-    [SerializeField] private List<Player> players = new List<Player>();
-    [SerializeField] private Field startField;
-    private List<Field> allFields = new List<Field>();
-
-    private int currentPlayerIndex = 0;
-
-    // Power Outage Tracking
-    private bool isPowerOutageActive = false;
-    private int powerOutageRemainingPlayers = 0;
-
-    // for mandatory turn logic
-    private bool playerMovedThisTurn = false; 
 
     private void Awake()
     {
@@ -32,54 +21,98 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Serialized Fields
+
+    [SerializeField] private List<Player> players = new List<Player>();
+    [SerializeField] private Field startField;
+
+    #endregion
+
+    #region Private Fields
+
+    private List<Field> allFields = new List<Field>();
+    private int currentPlayerIndex = 0;
+
+    // Power Outage Effect (global for all players, lasts one full round)
+    private bool isPowerOutageActive = false;
+    private int powerOutageRemainingPlayers = 0;
+
+    // Movement Tracking (for card deck eligibility)
+    private bool playerMovedThisTurn = false;
+
+    // Game Lock (prevents interaction during dice rolls, animations, etc.)
+    private bool isGameLocked = false;
+
+    #endregion
+
+    #region Unity Lifecycle
+
     private void Start()
     {
         InitializeGame();
+        SubscribeToDiceEvents();
     }
+
+    #endregion
+
+    #region Initialization
 
     private void InitializeGame()
     {
-        // find all fields in the scene
+        // Find all fields in the scene
         allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
 
+        // Set starting position for first player
         if (players.Count > 0 && startField != null)
         {
             players[0].SetCurrentField(startField);
         }
+
         UpdateClickableFields();
     }
 
-    // returns the player whose turn it currently is
+    private void SubscribeToDiceEvents()
+    {
+        // Subscribe to dice events if DiceManager exists
+        if (DiceManager.Instance != null)
+        {
+            // OnDiceRoll will be added by your teammate
+            // Uncomment this line when DiceManager.OnDiceRoll is implemented:
+            // DiceManager.Instance.OnDiceRoll.AddListener(OnDiceRollStarted);
+
+            // OnDiceResult already exists in DiceManager
+            DiceManager.Instance.OnDiceResult.AddListener(OnDiceRollFinished);
+        }
+    }
+
+    #endregion
+
+    #region Player Management
+
+    /// <summary>
+    /// Returns the player whose turn it currently is
+    /// </summary>
     public Player GetCurrentPlayer()
     {
         return players[currentPlayerIndex];
     }
 
-    // called by player when they move
-    public void SetPlayerMoved(bool moved)
+    /// <summary>
+    /// Returns list of all players in the game
+    /// </summary>
+    public List<Player> GetAllPlayers()
     {
-        playerMovedThisTurn = moved;
+        return players;
     }
 
-    // called by CardManager/UI to check if player oved
-    public bool DidPlayerMoveThisTurn()
-    {
-        return playerMovedThisTurn;
-    }
-
-    // switches to the next player
+    /// <summary>
+    /// Switches to the next player and handles round-based effects
+    /// </summary>
     public void NextPlayer()
     {
-        Player currentPlayer = GetCurrentPlayer();
-        
-        // check if current player has mandatory next turn
-        if (currentPlayer.IsNextTurnMandatory())
-        {
-            Debug.Log($"{currentPlayer.GetPlayerName()} must take their mandatory turn (Energy Drink effect). Cannot skip!");
-            return;
-        }
-
-        // reset movement flag when switching to next player
+        // Reset movement flag when switching to next player
         playerMovedThisTurn = false;
 
         // Switch to next player
@@ -101,20 +134,34 @@ public class GameManager : MonoBehaviour
         UpdateClickableFields();
     }
 
-    // makes fields clickable based on current player position
+    #endregion
+
+    #region Field Management
+
+    /// <summary>
+    /// Makes fields clickable based on current player position
+    /// Respects game lock state (e.g., during dice rolls)
+    /// </summary>
     public void UpdateClickableFields()
     {
-        // first, make all fields non-clickable
+        // If game is locked (e.g., during dice roll), don't make anything clickable
+        if (isGameLocked)
+        {
+            Debug.Log("Game is locked - fields remain non-clickable");
+            return;
+        }
+
+        // First, make all fields non-clickable
         foreach (Field field in allFields)
         {
             field.SetClickable(false);
         }
 
-        // get current player and their position
+        // Get current player and their position
         Player currentPlayer = GetCurrentPlayer();
         Field currentField = currentPlayer.GetCurrentField();
 
-        // make neighboring fields clickable
+        // Make neighboring fields clickable
         if (currentField != null)
         {
             List<Field> neighbours = currentField.GetNeighbours();
@@ -125,7 +172,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // returns all fields that currently have players on them
+    /// <summary>
+    /// Returns all fields that currently have players on them
+    /// </summary>
     public List<Field> GetOccupiedFields()
     {
         List<Field> occupied = new List<Field>();
@@ -140,13 +189,14 @@ public class GameManager : MonoBehaviour
         return occupied;
     }
 
-    // returns list of all players in the game
-    public List<Player> GetAllPlayers()
-    {
-        return players;
-    }
+    #endregion
 
-    // Additional method for Bistro entry (called from Bistro.cs)
+    #region Special Field Actions
+
+    /// <summary>
+    /// Handles Bistro entry logic (called from Bistro.cs)
+    /// Checks if player has access card and consumes it
+    /// </summary>
     public void TryBistroEntry(Player player)
     {
         if (player.HasAccessCard())
@@ -160,7 +210,76 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Helper for finding player with most hint cards (for CardManager)
+    #endregion
+
+    #region Card Effects - Power Outage
+
+    /// <summary>
+    /// Activates Power Outage effect (called by CardManager)
+    /// Prevents hydration loss for all players for one complete round
+    /// </summary>
+    public void EnableNoHydrationLossForAllPlayersThisTurn()
+    {
+        isPowerOutageActive = true;
+        powerOutageRemainingPlayers = players.Count + 1; // +1 to include current player
+
+        Debug.Log($"Power Outage activated! No hydration loss for the next {powerOutageRemainingPlayers} moves.");
+    }
+
+    /// <summary>
+    /// Checks if Power Outage is currently active (called by Player.MoveToField)
+    /// </summary>
+    public bool IsPowerOutageActive()
+    {
+        return isPowerOutageActive;
+    }
+
+    #endregion
+
+    #region Card Effects - Movement Tracking
+
+    /// <summary>
+    /// Sets whether the current player moved this turn (called by Player.MoveToField)
+    /// Used to determine which card decks are available
+    /// </summary>
+    public void SetPlayerMoved(bool moved)
+    {
+        playerMovedThisTurn = moved;
+    }
+
+    /// <summary>
+    /// Checks if current player moved this turn (called by CardManager/UI)
+    /// Returns true if player moved, false otherwise
+    /// Used for card deck eligibility: both decks if moved, only action cards if not
+    /// </summary>
+    public bool DidPlayerMoveThisTurn()
+    {
+        return playerMovedThisTurn;
+    }
+
+    #endregion
+
+    #region Card Effects - Energy Drink
+
+    /// <summary>
+    /// Checks if current player can skip movement (called by CardManager/UI)
+    /// Returns false if Energy Drink effect is active (mandatory move required)
+    /// Used to disable card buttons when player must move
+    /// </summary>
+    public bool CanCurrentPlayerSkipMovement()
+    {
+        Player currentPlayer = GetCurrentPlayer();
+        return !currentPlayer.IsNextTurnMandatory();
+    }
+
+    #endregion
+
+    #region Helper Methods for CardManager
+
+    /// <summary>
+    /// Finds and returns the player with the most hint cards
+    /// Used by CardManager for certain card effects
+    /// </summary>
     public Player GetPlayerWithMostHintCards()
     {
         Player maxPlayer = null;
@@ -177,20 +296,51 @@ public class GameManager : MonoBehaviour
         return maxPlayer;
     }
 
-    // Power Outage - Called by CardManager when power outage card is drawn
-    // Enables no hydration loss for all players for one complete round
-    public void EnableNoHydrationLossForAllPlayersThisTurn()
-    {
-        isPowerOutageActive = true;
-        // +1 to include the current player who drew the card
-        powerOutageRemainingPlayers = players.Count + 1;
+    #endregion
 
-        Debug.Log($"Power Outage activated! No hydration loss for the next {powerOutageRemainingPlayers} moves.");
+    #region Dice Events (Game Lock System)
+
+    /// <summary>
+    /// Called when dice roll starts (by DiceManager.OnDiceRoll event)
+    /// Locks game and disables all field interactions
+    /// </summary>
+    private void OnDiceRollStarted()
+    {
+        isGameLocked = true;
+        Debug.Log("Dice rolling - game locked!");
+
+        // Make all fields non-clickable during dice roll
+        foreach (Field field in allFields)
+        {
+            field.SetClickable(false);
+        }
     }
 
-    // Check if power outage is currently active
-    public bool IsPowerOutageActive()
+    /// <summary>
+    /// Called when dice roll finishes (by DiceManager.OnDiceResult event)
+    /// Unlocks game and restores field interactions
+    /// </summary>
+    private void OnDiceRollFinished(int result)
     {
-        return isPowerOutageActive;
+        Debug.Log($"Dice result: {result} - unlocking game!");
+
+        isGameLocked = false;
+
+        // Restore clickable fields
+        UpdateClickableFields();
+
+        // TODO: Handle dice result (e.g., spawn/move Alf)
+        // This is handled by your teammate's code
     }
+
+    /// <summary>
+    /// Checks if game is currently locked (called by UI)
+    /// Returns true during dice rolls, animations, or other blocking events
+    /// </summary>
+    public bool IsGameLocked()
+    {
+        return isGameLocked;
+    }
+
+    #endregion
 }
