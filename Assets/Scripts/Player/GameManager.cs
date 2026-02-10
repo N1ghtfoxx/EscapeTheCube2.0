@@ -12,12 +12,21 @@ public class GameManager : MonoBehaviour
 
     private int currentPlayerIndex = 0;
 
+    // Power Outage Tracking
+    private bool isPowerOutageActive = false;
+    private int powerOutageRemainingPlayers = 0;
+
     private void Awake()
     {
         if (Instance == null)
+        {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
         else
+        {
             Destroy(gameObject);
+        }
     }
 
     private void Start()
@@ -53,10 +62,25 @@ public class GameManager : MonoBehaviour
             // If mandatory, do not advance; reset flag and force move
             currentPlayer.SetNextTurnMandatory(false);
             Debug.Log($"{currentPlayer.GetPlayerName()} must take their mandatory turn.");
-            // TODO: If turns can be skipped, prevent skip here; otherwise, just log
             return;
         }
+
+        // Switch to next player
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
+
+        // Handle Power Outage countdown AFTER switching player
+        if (isPowerOutageActive)
+        {
+            powerOutageRemainingPlayers--;
+            Debug.Log($"Power Outage: {powerOutageRemainingPlayers} player(s) remaining in this round.");
+
+            if (powerOutageRemainingPlayers <= 0)
+            {
+                isPowerOutageActive = false;
+                Debug.Log("Power Outage ended - normal hydration loss applies again.");
+            }
+        }
+
         UpdateClickableFields();
     }
 
@@ -110,9 +134,8 @@ public class GameManager : MonoBehaviour
     {
         if (player.HasAccessCard())
         {
-            player.ConsumeAccessCard(); // Assume consume on successful entry
+            player.ConsumeAccessCard();
             Debug.Log($"{player.GetPlayerName()} entered Bistro using an access card.");
-            // TODO: Additional Bistro logic if needed
         }
         else
         {
@@ -137,23 +160,20 @@ public class GameManager : MonoBehaviour
         return maxPlayer;
     }
 
-    // power outage base
+    // Power Outage - Called by CardManager when power outage card is drawn
+    // Enables no hydration loss for all players for one complete round
     public void EnableNoHydrationLossForAllPlayersThisTurn()
     {
-        Debug.LogError("=== POWER OUTAGE START – Methode wird erreicht ===");   
-        Debug.Log("Spieler in Liste: " + players.Count);
+        isPowerOutageActive = true;
+        // +1 to include the current player who drew the card
+        powerOutageRemainingPlayers = players.Count + 1;
 
-        foreach (Player player in players)
-        {
-            Debug.Log("Versuche Setter bei: " + (player != null ? player.name : "NULL PLAYER"));
+        Debug.Log($"Power Outage activated! No hydration loss for the next {powerOutageRemainingPlayers} moves.");
+    }
 
-            if (player != null)
-            {
-                player.SetNoHydrationLossThisTurn(true);
-                Debug.Log("Setter-Aufruf für " + player.name + " abgeschlossen");
-            }
-        }
-
-        Debug.LogError("=== POWER OUTAGE ENDE ===");
+    // Check if power outage is currently active
+    public bool IsPowerOutageActive()
+    {
+        return isPowerOutageActive;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Rendering;
 
 public class Player : MonoBehaviour
 {
@@ -16,24 +15,25 @@ public class Player : MonoBehaviour
     [Header("Special States")]
     private bool nextTurnMandatory = false;
     private bool hasVisitedWC = false;
-    private bool noHydrationLossThisTurn = false;
 
     // moves player to a new field
     public void MoveToField(Field newField)
     {
-        Debug.LogWarning($"{GetPlayerName()} - MoveToField aufgerufen | Flag-Wert = {noHydrationLossThisTurn} | Hydration vor Move: {GetHydration()}");
+        // Check if power outage is active (global effect)
+        bool isPowerOutage = GameManager.Instance.IsPowerOutageActive();
 
-        if (!noHydrationLossThisTurn)
+        if (!isPowerOutage)
         {
+            // Normal hydration loss
             ChangeHydration(-1);
-            Debug.Log("-1 Hydration abgezogen");
+            Debug.Log($"{GetPlayerName()} moved and lost 1 hydration. Current: {GetHydration()}/{GetMaxHydration()}");
         }
         else
         {
-            Debug.Log("KEIN Hydrationsverlust – Flag war true");
-            noHydrationLossThisTurn = false;
-            Debug.Log("Flag zurückgesetzt auf false");
+            // Power outage active - no hydration loss
+            Debug.Log($"{GetPlayerName()} moved without hydration loss (Power Outage active).");
         }
+
         currentField = newField;
         transform.position = newField.transform.position;
 
@@ -167,19 +167,6 @@ public class Player : MonoBehaviour
 
     #region Special Effect Activators
 
-    // public for CardManager to call
-    public void SetNoHydrationLossThisTurn(bool value)
-    {
-        noHydrationLossThisTurn = value;
-        Debug.LogError("SETTER LÄUFT! Bei " + GetPlayerName() + " -> Wert = " + value);
-    }
-
-    public bool GetNoHydrationLossThisTurn()
-    {
-        return noHydrationLossThisTurn;
-    }
-
-
     public void SetNextTurnMandatory(bool value)
     {
         nextTurnMandatory = value;
@@ -195,16 +182,12 @@ public class Player : MonoBehaviour
     }
 
     // Placeholder for Secret Passage (teleport to adjacent Theke/counter)
-    // Assuming "adjacent Theke" means a specific Field type like Theke1;
-    // implement logic here or in GameManager
     public void ActivateSecretPassage()
     {
-        // TODO: Logic to find and teleport to an adjacent Theke (e.g., Theke1 or similar)
-        // For example: Find nearest Theke1 from currentField neighbours
         Field targetTheke = null;
         foreach (Field neighbour in currentField.GetNeighbours())
         {
-            if (neighbour is Theke1) // Assuming Theke1 is the "counter"
+            if (neighbour is Theke1)
             {
                 targetTheke = neighbour;
                 break;
@@ -212,7 +195,7 @@ public class Player : MonoBehaviour
         }
         if (targetTheke != null)
         {
-            MoveToField(targetTheke); // Use MoveToField to handle movement
+            MoveToField(targetTheke);
             Debug.Log($"{GetPlayerName()} teleported to adjacent Theke via secret passage.");
         }
         else
@@ -222,14 +205,13 @@ public class Player : MonoBehaviour
     }
 
     // Placeholder for Free Move Towards Exit
+    // Note: This should be handled by CardManager directly calling the movement logic
+    // without triggering hydration loss through the power outage system
     public void ActivateFreeMoveTowardsExit()
     {
-        // TODO: Logic to move one step towards Exit without cost
-        // This might require pathfinding or predefined paths to Exit
-        // For now, assume we set noHydrationLossThisTurn and prompt a move
-        SetNoHydrationLossThisTurn(true);
         Debug.Log($"{GetPlayerName()} can make one free move towards the exit.");
-        // Additional logic if automatic move is needed
+        // TODO: CardManager should handle this by temporarily activating power outage
+        // or by directly moving the player without calling MoveToField
     }
 
     #endregion
