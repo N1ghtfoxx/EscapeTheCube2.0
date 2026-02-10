@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
     private bool isPowerOutageActive = false;
     private int powerOutageRemainingPlayers = 0;
 
+    // for mandatory turn logic
+    private bool playerMovedThisTurn = false; 
+
     private void Awake()
     {
         if (Instance == null)
@@ -52,18 +55,32 @@ public class GameManager : MonoBehaviour
         return players[currentPlayerIndex];
     }
 
+    // called by player when they move
+    public void SetPlayerMoved(bool moved)
+    {
+        playerMovedThisTurn = moved;
+    }
+
+    // called by CardManager/UI to check if player oved
+    public bool DidPlayerMoveThisTurn()
+    {
+        return playerMovedThisTurn;
+    }
+
     // switches to the next player
     public void NextPlayer()
     {
-        // Check if current player has mandatory next turn (e.g., cannot skip)
         Player currentPlayer = GetCurrentPlayer();
+        
+        // check if current player has mandatory next turn
         if (currentPlayer.IsNextTurnMandatory())
         {
-            // If mandatory, do not advance; reset flag and force move
-            currentPlayer.SetNextTurnMandatory(false);
-            Debug.Log($"{currentPlayer.GetPlayerName()} must take their mandatory turn.");
+            Debug.Log($"{currentPlayer.GetPlayerName()} must take their mandatory turn (Energy Drink effect). Cannot skip!");
             return;
         }
+
+        // reset movement flag when switching to next player
+        playerMovedThisTurn = false;
 
         // Switch to next player
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;

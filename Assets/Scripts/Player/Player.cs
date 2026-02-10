@@ -19,6 +19,9 @@ public class Player : MonoBehaviour
     // moves player to a new field
     public void MoveToField(Field newField)
     {
+        // signal that player moved this turn
+        GameManager.Instance.SetPlayerMoved(true);
+
         // Check if power outage is active (global effect)
         bool isPowerOutage = GameManager.Instance.IsPowerOutageActive();
 
@@ -32,6 +35,13 @@ public class Player : MonoBehaviour
         {
             // Power outage active - no hydration loss
             Debug.Log($"{GetPlayerName()} moved without hydration loss (Power Outage active).");
+        }
+
+        // reset mandatory turn flag after movement
+        if (nextTurnMandatory)
+        {
+            nextTurnMandatory = false;
+            Debug.Log($"{GetPlayerName()} completed mandatory turn (Energy Drink effect ended).");
         }
 
         currentField = newField;
