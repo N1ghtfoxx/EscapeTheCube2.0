@@ -115,16 +115,14 @@ public class CardManager : MonoBehaviour
             case CardEffect.SwapPositionWithAlf:
                 // SwapWithAlf: Swap positions with Alf
                 Debug.Log($"{currPlayer.GetPlayerName()} swapping position with Alf...");
-                // TODO: Implement position swapping logic with Alf
-
                 EnemyManager.Instance.SwapPlayerWithAlf(currPlayer);
-                
                 break;
 
             case CardEffect.BlockAlf:
                 // UteHelps: Blockiere Alf für eine Runde
                 Debug.Log($"Alf is blocked for one round...");
-                // TODO: Implement Alf blocking for one turn
+                // TODO - Implement logic to unblock Alf after one round
+                EnemyManager.Instance.BlockAlf();
                 break;
 
             case CardEffect.FreeMoveTowardsExit:
@@ -142,7 +140,6 @@ public class CardManager : MonoBehaviour
             case CardEffect.CallBerta:
                 // AlfCalls4Reinforcement: Berta joined the game
                 Debug.Log($"Calling Berta to join the game...");
-                // TODO: Implement calling Berta (new enemy character)
                 EnemyManager.Instance.RollForTeleport(EnemyType.Bertha);
                 break;
 
@@ -164,6 +161,7 @@ public class CardManager : MonoBehaviour
                 // Ablenkungsmanoever: Alf f�r eine Runde einfrieren
                 Debug.Log($"Distraction effect activated - Alf frozen for one round.");
                 // TODO: Implement distraction effect (freezes Alf for one turn)
+                EnemyManager.Instance.BlockAlf();   
                 break;
 
             case CardEffect.Hydration4All:

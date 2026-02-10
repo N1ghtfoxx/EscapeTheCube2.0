@@ -68,6 +68,11 @@ public class EnemyManager : MonoBehaviour
             }
             bärtha.isActive = true;
         }
+        else if (enemyToTeleport == EnemyType.Alf && enemies[0].IsBlocked)
+        {
+            Debug.Log("Alf is blocked, cannot teleport.");
+            return;
+        }
         
         DiceManager.Instance.OnDiceResult.AddListener(TeleportEnemy);
         DiceManager.Instance.RollDice();
@@ -94,6 +99,16 @@ public class EnemyManager : MonoBehaviour
         currPlayer.GetCurrentField().OnPlayerArrived(currPlayer);
         GameManager.Instance.UpdateClickableFields();
         enemies[0].CurrentField = tmpP;
+    }
+    
+    public void BlockAlf()
+    {
+        enemies[0].IsBlocked = true;
+    }
+    
+    public void UnblockAlf()
+    {
+        enemies[0].IsBlocked = false;
     }
     
 }

@@ -4,6 +4,7 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField] private EnemyType enemyType;
     private Field currentField;
+    private bool isBlocked = false;
     
     public Field CurrentField
     {
@@ -22,6 +23,12 @@ public class Enemy : MonoBehaviour
                 }
             }
         }
+    }
+
+    public bool IsBlocked
+    {
+        get => isBlocked;
+        set => isBlocked = value;
     }
     
 }
