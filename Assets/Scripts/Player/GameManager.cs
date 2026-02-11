@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateClickableFields();
+        AssignPlayersToUIPanels();
     }
 
     private void SubscribeToDiceEvents()
@@ -343,4 +344,35 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
+    private void AssignPlayersToUIPanels()
+    {
+        PlayerUiPanel[] panels = FindObjectsByType<PlayerUiPanel>(FindObjectsSortMode.None);
+        List<Player> activePlayers = GetAllPlayers();
+
+        // Zuerst alle UIs ausblenden
+        foreach (var panel in panels)
+        {
+            panel.Hide();
+            panel.AssignPlayer(null);   // alte Zuweisung löschen
+        }
+
+        // Nur echte, aktive Spieler zuweisen (aktuell nur 1)
+        for (int i = 0; i < activePlayers.Count && i < panels.Length; i++)
+        {
+            var player = activePlayers[i];
+            var panel = panels[i];                    // P1 bekommt Spieler 0, P2 bekommt Spieler 1 usw.
+
+            panel.AssignPlayer(player);
+            panel.Show();                             // nur zugewiesene Panels einblenden
+        }
+
+        // Initial-Update der sichtbaren Panels
+        foreach (var player in activePlayers)
+        {
+            UiManager.Instance?.UpdatePlayerUI(player);
+        }
+
+        Debug.Log($"UI-Zuweisung: {activePlayers.Count} Spieler → {activePlayers.Count} UI-Panels sichtbar");
+    }
 }

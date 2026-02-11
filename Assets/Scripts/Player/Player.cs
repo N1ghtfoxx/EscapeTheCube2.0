@@ -104,6 +104,8 @@ public class Player : MonoBehaviour
     {
         hydration = Mathf.Clamp(hydration + amount, 0, maxHydration);
         OnHydrationChanged();
+
+        UiManager.Instance?.UpdatePlayerUI(this);
     }
 
     /// <summary>
@@ -162,6 +164,12 @@ public class Player : MonoBehaviour
     {
         hintCards += amount;
         Debug.Log($"{GetPlayerName()} gained {amount} hint card(s). Total: {hintCards}");
+
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.UpdatePlayerUI(this);
+        }
+
     }
 
     /// <summary>
@@ -171,6 +179,12 @@ public class Player : MonoBehaviour
     {
         hintCards = Mathf.Max(0, hintCards - amount);
         Debug.Log($"{GetPlayerName()} lost {amount} hint card(s). Total: {hintCards}");
+
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.UpdatePlayerUI(this);
+        }
+
     }
 
     #endregion
@@ -200,6 +214,12 @@ public class Player : MonoBehaviour
     {
         accessCards += amount;
         Debug.Log($"{GetPlayerName()} gained {amount} access card(s). Total: {accessCards}");
+
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.UpdatePlayerUI(this);
+        }
+
     }
 
     /// <summary>
@@ -209,6 +229,11 @@ public class Player : MonoBehaviour
     {
         accessCards = Mathf.Max(0, accessCards - amount);
         Debug.Log($"{GetPlayerName()} consumed {amount} access card(s). Total: {accessCards}");
+
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.UpdatePlayerUI(this);
+        }
     }
 
     #endregion

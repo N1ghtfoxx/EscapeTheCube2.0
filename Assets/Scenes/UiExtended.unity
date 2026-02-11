@@ -452,6 +452,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: P1
       objectReference: {fileID: 0}
+    - target: {fileID: 5427046632671189627, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfHydrationP1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368799173711002588, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfKeycardsP1
+      objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -532,6 +540,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7382352321427368709, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfCluesP1
+      objectReference: {fileID: 0}
     - target: {fileID: 7923636074689400529, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -539,13 +551,69 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 354442572}
   m_SourcePrefab: {fileID: 100100000, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
 --- !u!224 &354442567 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
   m_PrefabInstance: {fileID: 354442566}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &354442568 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2185396166455563277, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 354442566}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &354442569 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4885910938403691088, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 354442566}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &354442570 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4492829575272262884, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 354442566}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &354442571 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 354442566}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &354442572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354442571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c9ce3df93a95b46a47665f492eae64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hydrationText: {fileID: 354442570}
+  cluesText: {fileID: 354442569}
+  keycardsText: {fileID: 354442568}
 --- !u!1 &521218528
 GameObject:
   m_ObjectHideFlags: 0
@@ -1555,6 +1623,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: P3
       objectReference: {fileID: 0}
+    - target: {fileID: 5427046632671189627, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfHydrationP3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368799173711002588, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfKeycardsP3
+      objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1635,6 +1711,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7382352321427368709, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfCluesP3
+      objectReference: {fileID: 0}
     - target: {fileID: 7923636074689400529, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1642,13 +1722,69 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 867799016}
   m_SourcePrefab: {fileID: 100100000, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
 --- !u!224 &867799011 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
   m_PrefabInstance: {fileID: 867799010}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &867799012 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2185396166455563277, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 867799010}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &867799013 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4885910938403691088, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 867799010}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &867799014 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4492829575272262884, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 867799010}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &867799015 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 867799010}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &867799016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 867799015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c9ce3df93a95b46a47665f492eae64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hydrationText: {fileID: 867799014}
+  cluesText: {fileID: 867799013}
+  keycardsText: {fileID: 867799012}
 --- !u!1001 &889910120
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2049,6 +2185,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: P2
       objectReference: {fileID: 0}
+    - target: {fileID: 5427046632671189627, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfHydrationP2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368799173711002588, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfKeycardsP2
+      objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2129,6 +2273,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7382352321427368709, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfCluesP2
+      objectReference: {fileID: 0}
     - target: {fileID: 7923636074689400529, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -2136,13 +2284,69 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1337160470}
   m_SourcePrefab: {fileID: 100100000, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
 --- !u!224 &1337160465 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
   m_PrefabInstance: {fileID: 1337160464}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1337160466 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2185396166455563277, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 1337160464}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1337160467 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4885910938403691088, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 1337160464}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1337160468 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4492829575272262884, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 1337160464}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1337160469 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 1337160464}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1337160470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337160469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c9ce3df93a95b46a47665f492eae64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hydrationText: {fileID: 1337160468}
+  cluesText: {fileID: 1337160467}
+  keycardsText: {fileID: 1337160466}
 --- !u!1 &1339571217
 GameObject:
   m_ObjectHideFlags: 0
@@ -2936,6 +3140,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719152792}
   m_CullTransparentMesh: 1
+--- !u!1 &1751485931
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1751485933}
+  - component: {fileID: 1751485932}
+  m_Layer: 0
+  m_Name: UiManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1751485932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751485931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1341d02cfdfe6041815b14acb33f951, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventText: {fileID: 1719152794}
+--- !u!4 &1751485933
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751485931}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 808.57495, y: 893.9, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1764134899
 GameObject:
   m_ObjectHideFlags: 0
@@ -2995,6 +3244,14 @@ PrefabInstance:
     - target: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Name
       value: P4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5427046632671189627, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfHydrationP4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368799173711002588, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfKeycardsP4
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Pivot.x
@@ -3076,6 +3333,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7382352321427368709, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Name
+      value: NumberOfCluesP4
+      objectReference: {fileID: 0}
     - target: {fileID: 7923636074689400529, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -3083,13 +3344,69 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1838903405}
   m_SourcePrefab: {fileID: 100100000, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
 --- !u!224 &1838903400 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
   m_PrefabInstance: {fileID: 1838903399}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1838903401 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2185396166455563277, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 1838903399}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1838903402 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4885910938403691088, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 1838903399}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1838903403 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4492829575272262884, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 1838903399}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1838903404 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4616153124891492763, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+  m_PrefabInstance: {fileID: 1838903399}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1838903405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1838903404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c9ce3df93a95b46a47665f492eae64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hydrationText: {fileID: 1838903403}
+  cluesText: {fileID: 1838903402}
+  keycardsText: {fileID: 1838903401}
 --- !u!1 &2054043579 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6876443155875570323, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -3168,3 +3485,4 @@ SceneRoots:
   - {fileID: 1764134901}
   - {fileID: 1509118621}
   - {fileID: 851940197}
+  - {fileID: 1751485933}
