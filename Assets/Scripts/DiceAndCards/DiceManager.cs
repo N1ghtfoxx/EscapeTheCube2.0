@@ -16,8 +16,8 @@ public class DiceManager : MonoBehaviour
     [SerializeField] private Transform throwPosition;
     [SerializeField] private float verticality;
 
-    // unity event to get result
-    public UnityEvent<int> OnDiceResult;
+    public UnityEvent OnDiceRoll; // unity event to notify when dices are rolled
+    public UnityEvent<int> OnDiceResult; // unity event to get result
 
     private void Awake()
     {
@@ -53,6 +53,8 @@ public class DiceManager : MonoBehaviour
 
     [ContextMenu("Roll Dice")]
     public void RollDice() {        
+        OnDiceRoll.Invoke();
+        
         foreach (Rigidbody diceRb in diceRigidbodies)
         {
             diceRb.isKinematic = false;
