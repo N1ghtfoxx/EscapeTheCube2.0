@@ -1,20 +1,21 @@
 using System.Collections.Generic;
-using System.IO;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardManager : MonoBehaviour
 {
-    public static CardManager instance;
+    public static CardManager Instance;
 
     private List<Card> ItemCardDictionary = new List<Card>();
     private List<Card> ActionCardDictionary = new List<Card>();
 
+    [SerializeField] private Button[] cardButtons;
+
     private void Start()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
         else
@@ -23,6 +24,31 @@ public class CardManager : MonoBehaviour
         }
 
         FillDict();
+        
+        foreach (Button btn in cardButtons)
+        {
+            DiceManager.Instance.OnDiceRoll.AddListener(OnDicesRolling);
+            DiceManager.Instance.OnDiceResult.AddListener(OnDicesResult);
+        }
+        
+    }
+
+    private void OnDicesRolling()
+    {
+        SetCardInteractable(false);
+    }
+    
+    private void OnDicesResult(int diceResult)
+    {
+        SetCardInteractable(true);
+    }
+    
+    private void SetCardInteractable(bool isInteractable)
+    {
+        foreach (Button btn in cardButtons)
+        {
+            btn.interactable = isInteractable;
+        }
     }
 
     private void FillDict()
