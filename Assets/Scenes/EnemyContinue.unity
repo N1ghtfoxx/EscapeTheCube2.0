@@ -739,6 +739,7 @@ GameObject:
   m_Component:
   - component: {fileID: 550457858}
   - component: {fileID: 550457857}
+  - component: {fileID: 550457859}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -753,7 +754,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 550457856}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdebe95637117f047a54093144de58d3, type: 3}
   m_Name: 
@@ -776,6 +777,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &550457859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 550457856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 936792339916470f8ce4ab9be33157c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnNextPlayer:
+    m_PersistentCalls:
+      m_Calls: []
+  players:
+  - {fileID: 1673300913}
+  startField: {fileID: 1501155254}
 --- !u!114 &583424365 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2438850554923468322, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -1708,6 +1727,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+    - target: {fileID: 8667943611932132761, guid: 811966dae17ee87488431f0cf4036309, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2972,6 +2995,7 @@ MonoBehaviour:
   - {fileID: 1115230299}
   - {fileID: 987384113}
   fields: {fileID: 2054043579}
+  theFields: []
 --- !u!4 &1764134901
 Transform:
   m_ObjectHideFlags: 0
