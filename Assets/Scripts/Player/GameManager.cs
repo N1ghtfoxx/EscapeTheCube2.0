@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
         {
             // OnDiceRoll will be added by your teammate
             // Uncomment this line when DiceManager.OnDiceRoll is implemented:
-            // DiceManager.Instance.OnDiceRoll.AddListener(OnDiceRollStarted);
+            DiceManager.Instance.OnDiceRoll.AddListener(OnDiceRollStarted);
 
             // OnDiceResult already exists in DiceManager
             DiceManager.Instance.OnDiceResult.AddListener(OnDiceRollFinished);
