@@ -11,11 +11,12 @@ public class EnemyManager : MonoBehaviour
 
     [SerializeField] private List<Enemy> enemies;
     [SerializeField] private GameObject fields;
-    private List<Field> theFields;
+    public List<Field> theFields;
 
     private EnemyType enemyToTeleport;
+    private int blockingAlfCounter = 0;
 
-    private void Start()
+    private void Awake()
     {
         if (Instance == null)
         {
@@ -23,9 +24,12 @@ public class EnemyManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this.gameObject);
         }
-        
+    }
+    
+    private void Start()
+    {
         theFields = fields.GetComponentsInChildren<Field>().ToList();
         var toRemove = theFields.Where(tmp => tmp.name.Equals("Outline") || tmp.name.Equals("Fields")).ToArray();
         
@@ -52,6 +56,24 @@ public class EnemyManager : MonoBehaviour
         
         enemies[0].CurrentField = theFields[7];
         
+        // TODO: Subscribe to player change event to handle blocking Alf
+        // GameManager.Instance.OnNextPlayer.AddListener(OnPlayerChange);
+        
+    }
+
+    private void OnPlayerChange()
+    {
+        if (enemies[0].IsBlocked)
+        {
+            if (blockingAlfCounter != 0)
+            {
+                UnblockAlf();
+                return;
+            }
+            
+            blockingAlfCounter--;
+        }
+
     }
 
     public void RollForTeleport(EnemyType et)
@@ -61,12 +83,12 @@ public class EnemyManager : MonoBehaviour
         if (enemyToTeleport == EnemyType.Bertha)
         {
             EnemyBertha bärtha = enemies[1].GetComponent<EnemyBertha>();
-            if (bärtha.isActive)
+            if (bärtha.IsActive)
             {
                 Debug.Log("Bertha is already active, cannot teleport.");
                 return;
             }
-            bärtha.isActive = true;
+            bärtha.IsActive = true;
         }
         else if (enemyToTeleport == EnemyType.Alf && enemies[0].IsBlocked)
         {
@@ -94,21 +116,46 @@ public class EnemyManager : MonoBehaviour
         var tmpP = currPlayer.GetCurrentField();
         
         // swap the positions
-        enemies[0].gameObject.transform.position = new Vector3(20, 20, 0); // move Alf to a temporary position to avoid overlap during the swap
+        enemies[0].CurrentField = null; // move Alf to a temporary position to avoid overlap during the swap
         currPlayer.SetCurrentField(tmp);
         currPlayer.GetCurrentField().OnPlayerArrived(currPlayer);
         GameManager.Instance.UpdateClickableFields();
         enemies[0].CurrentField = tmpP;
+        
+    }
+
+    public void CheckIfPlayersAndAlfOnSameField(EnemyType et)
+    {
+        List<Player> players = GameManager.Instance.GetAllPlayers();
+        
+        int comp = et.CompareTo(EnemyType.Alf);
+        Field ef = enemies[comp].CurrentField;
+        
+        foreach (var player in players)
+        {
+            if (player.GetCurrentField() == ef)
+            {
+                Debug.Log("Player " + player.name + " is on the same field as " + et);
+                player.MoveToField(theFields[0]);
+                player.RemoveHintCard(player.GetHintCards());
+            }
+            else
+            {
+                Debug.Log("Player " + player.name + " is safe!");
+            }
+        }
     }
     
     public void BlockAlf()
     {
         enemies[0].IsBlocked = true;
+        blockingAlfCounter++;
     }
     
-    public void UnblockAlf()
+    private void UnblockAlf()
     {
         enemies[0].IsBlocked = false;
+        Debug.Log("Unblocked Alf");
     }
     
 }
