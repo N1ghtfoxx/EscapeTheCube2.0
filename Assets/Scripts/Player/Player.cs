@@ -49,6 +49,7 @@ public class Player : MonoBehaviour
         else
         {
             // Power outage active - no hydration loss
+            // TODO: implement no hyration loss?
             Debug.Log($"{GetPlayerName()} moved without hydration loss (Power Outage active).");
         }
 
@@ -105,7 +106,11 @@ public class Player : MonoBehaviour
         hydration = Mathf.Clamp(hydration + amount, 0, maxHydration);
         OnHydrationChanged();
 
-        UiManager.Instance?.UpdatePlayerUI(this);
+        // automatically update UI
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.UpdatePlayerUI(this);
+        }
     }
 
     /// <summary>
