@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -44,6 +45,12 @@ public class GameManager : MonoBehaviour
 
     // Game Lock (prevents interaction during dice rolls, animations, etc.)
     private bool isGameLocked = false;
+
+    #endregion
+
+    #region Unity Events
+
+    public UnityEvent OnNextPlayer;
 
     #endregion
 
@@ -131,6 +138,8 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Power Outage ended - normal hydration loss applies again.");
             }
         }
+
+        OnNextPlayer?.Invoke();
 
         UpdateClickableFields();
     }
