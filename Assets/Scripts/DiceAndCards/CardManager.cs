@@ -1,28 +1,57 @@
 using System.Collections.Generic;
-using System.IO;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardManager : MonoBehaviour
 {
-    public static CardManager instance;
+    public static CardManager Instance;
 
     private List<Card> ItemCardDictionary = new List<Card>();
     private List<Card> ActionCardDictionary = new List<Card>();
 
-    private void Start()
+    [SerializeField] private Button[] cardButtons;
+
+    private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            Instance = this;
         }
         else
         {
             Destroy(this.gameObject);
         }
+    }
+    
+    private void Start()
+    {
 
         FillDict();
+        
+        foreach (Button btn in cardButtons)
+        {
+            DiceManager.Instance.OnDiceRoll.AddListener(OnDicesRolling);
+            DiceManager.Instance.OnDiceResult.AddListener(OnDicesResult);
+        }
+        
+    }
+
+    private void OnDicesRolling()
+    {
+        SetCardInteractable(false);
+    }
+    
+    private void OnDicesResult(int diceResult)
+    {
+        SetCardInteractable(true);
+    }
+    
+    private void SetCardInteractable(bool isInteractable)
+    {
+        foreach (Button btn in cardButtons)
+        {
+            btn.interactable = isInteractable;
+        }
     }
 
     private void FillDict()
@@ -75,7 +104,7 @@ public class CardManager : MonoBehaviour
                 break;
 
             case CardEffect.NextTurnMandatory:
-                // Energydrink: n�chster Zug verpflichtend
+                // Energydrink: nächster Zug verpflichtend
                 Debug.Log($"{currPlayer.GetPlayerName()}'s next turn is mandatory.");
                 break;
 
@@ -134,7 +163,7 @@ public class CardManager : MonoBehaviour
             case CardEffect.LoseHintCard:
                 // RiceNoPommes: Verliere einen Hinweis
                 Debug.Log($"{currPlayer.GetPlayerName()} loses a hint card.");
-                // TODO: Remove hint card from Player
+                currPlayer.RemoveHintCard();
                 break;
 
             case CardEffect.CallBerta:
@@ -146,27 +175,27 @@ public class CardManager : MonoBehaviour
             case CardEffect.NoHydrationLoss4Everyone:
                 // Stromausfall: alle Spieler k�nnen sich ohne Hydrationsverlust bewegen
                 Debug.Log($"Power outage! No hydration loss for all players this turn.");
-                // TODO: Implement no hydration loss for all players this turn
+                GameManager.Instance.EnableNoHydrationLossForAllPlayersThisTurn();
                 break;
 
             case CardEffect.PlayerWithMostAccessCardsLosesOne:
                 // SpeiseplanAenderung: Spieler mit den meisten Hinweiskarten verliert einen
                 // Note: The description says "Hint Cards" but enum is "AccessCards" - following description
-                List<Player> allPlayers = GameManager.Instance.GetAllPlayers();
                 Debug.Log($"Finding player with most hint cards...");
                 // TODO: Track hint cards and remove one from player with most hint cards
+                
+                GameManager.Instance.GetPlayerWithMostHintCards().RemoveHintCard();
                 break;
 
             case CardEffect.Distraction:
-                // Ablenkungsmanoever: Alf f�r eine Runde einfrieren
+                // Ablenkungsmanoever: Alf für eine Runde einfrieren
                 Debug.Log($"Distraction effect activated - Alf frozen for one round.");
-                // TODO: Implement distraction effect (freezes Alf for one turn)
                 EnemyManager.Instance.BlockAlf();   
                 break;
 
             case CardEffect.Hydration4All:
                 // HappyHour: Alle Spieler erhalten +2 Hydration
-                allPlayers = GameManager.Instance.GetAllPlayers();
+                List<Player> allPlayers = GameManager.Instance.GetAllPlayers();
                 foreach (Player player in allPlayers)
                 {
                     if (drawnCard.hydration != 0)

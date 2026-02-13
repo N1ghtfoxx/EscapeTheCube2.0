@@ -13,13 +13,16 @@ public class Enemy : MonoBehaviour
         {
             currentField = value;
             if (value != null)
+            {
                 transform.position = value.transform.position;
+                EnemyManager.Instance.CheckIfPlayersAndAlfOnSameField(enemyType);
+            }
             else
             {
                 transform.position = new Vector3(20, 20, 0);  
                 if (enemyType == EnemyType.Bertha)
                 {
-                    gameObject.GetComponent<EnemyBertha>().isActive = false;
+                    gameObject.GetComponent<EnemyBertha>().IsActive = false;
                 }
             }
         }
