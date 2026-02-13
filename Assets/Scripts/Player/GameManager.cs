@@ -26,13 +26,17 @@ public class GameManager : MonoBehaviour
 
     #region Serialized Fields
 
-    [SerializeField] private List<Player> players = new List<Player>();
+    [SerializeField] private GameObject playerPrefab; // the one single Playr Prefab
     [SerializeField] private Field startField;
+
+    [Header("UI Panels")]
+    [SerializeField] private PlayerUiPanel[] playerUiPanels; // assign panels in corret order (Player 1-4)
 
     #endregion
 
     #region Private Fields
 
+    private List<Player> players = new List<Player>(); // now dynamic, populated at runtime
     private List<Field> allFields = new List<Field>();
     private int currentPlayerIndex = 0;
 
@@ -71,6 +75,9 @@ public class GameManager : MonoBehaviour
         // Find all fields in the scene
         allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
 
+        // spawn player from StartHub selection
+        SpawnPlayerFromSelection();
+
         // Set starting position for first player
         if (players.Count > 0 && startField != null)
         {
@@ -79,6 +86,96 @@ public class GameManager : MonoBehaviour
 
         UpdateClickableFields();
         AssignPlayersToUIPanels();
+    }
+
+    /// <summary>
+    /// Spawns all player characters selected in StartHub
+    /// Uses single player prefab and applies selected character sprites
+    /// </summary>
+    private void SpawnPlayerFromSelection()
+    {
+        // check if PlayerData exists and has valid selections
+        if (PlayerData.Instance == null || !PlayerData.Instance.HasSelection())
+        {
+            Debug.LogWarning("No player selection found! Using fallback player.");
+            // FALLBACK: You could create a default player here or show error
+            return;
+        }
+
+        // check if player prefab is assigned
+        if (playerPrefab == null)
+        {
+            Debug.LogError("Player Prefab is not assigned in GameManager!");
+            return;
+        }
+
+        // get all player selections
+        var allSelections = PlayerData.Instance.GetAllPlayerSelections();
+
+        Debug.Log($"Spawning {allSelections.Count} player(s)");
+
+        // spawn each player
+        for (int i = 0; i< allSelections.Count; i++)
+        {
+            var selection = allSelections[i];
+
+            // calculate spawn position (offset if multiple players)
+            Vector3 spawnPosition = startField != null ? startField.transform.position : Vector3.zero;
+
+            // add small offset for multipe players so they don't overlap
+            if (allSelections.Count > 1)
+            {
+                float offsetX = (i - (allSelections.Count - 1) / 2f) * 0.5f; // spread them out
+                spawnPosition += new Vector3(offsetX, 0, 0);
+            }
+
+            // spawn the player prefab
+            GameObject playerObject = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+            playerObject.name = $"Player_{i + 1}_{selection.playerName}"; // readable name in hierarchy
+
+            // Get Player component and configure it
+            Player playerComponent = playerObject.GetComponent<Player>();
+            if (playerComponent != null)
+            {
+                // Set player name from StartHub input
+                playerComponent.SetPlayerName(selection.playerName);
+
+                // Apply character sprite to the spawned player
+                SpriteRenderer spriteRenderer = playerObject.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null && selection.characterData != null)
+                {
+                    spriteRenderer.sprite = selection.characterData.characterSprite;
+                    Debug.Log($"Player {i + 1} applied sprite: {selection.characterData.characterSprite.name}");
+                }
+
+                //// Optional: Apply character-specific stats
+                //if (selection.characterData != null && selection.characterData.startingHydration > 0)
+                //{
+                //    // If you want different starting hydration per character
+                //    // You'd need to add a method like SetStartingHydration(int amount) to Player.cs
+                //    // playerComponent.SetStartingHydration(selection.characterData.startingHydration);
+                //}
+
+                // Add to players list
+                players.Add(playerComponent);
+
+                Debug.Log($"Player {i + 1} spawned: {selection.playerName} as {selection.characterData.characterName}");
+            }
+            else
+            {
+                Debug.LogError("Spawned player prefab doesn't have Player component!");
+                Destroy(playerObject);
+            }
+        }
+
+        // Set all players to start field
+        if (startField != null)
+        {
+            foreach (var player in players)
+            {
+                player.SetCurrentField(startField);
+            }
+        }
     }
 
     private void SubscribeToDiceEvents()
@@ -356,24 +453,46 @@ public class GameManager : MonoBehaviour
 
     private void AssignPlayersToUIPanels()
     {
-        PlayerUiPanel[] panels = FindObjectsByType<PlayerUiPanel>(FindObjectsSortMode.None);
+        // Use explicit panel array if assigned, otherwise find them
+        PlayerUiPanel[] panels = playerUiPanels != null && playerUiPanels.Length > 0
+            ? playerUiPanels
+            : FindObjectsByType<PlayerUiPanel>(FindObjectsSortMode.None);
+
         List<Player> activePlayers = GetAllPlayers();
+
+        // Safety check
+        if (panels == null || panels.Length == 0)
+        {
+            Debug.LogError("No PlayerUiPanels found! Assign them in GameManager or add them to the scene.");
+            return;
+        }
 
         // Zuerst alle UIs ausblenden
         foreach (var panel in panels)
         {
-            panel.Hide();
-            panel.AssignPlayer(null);   // alte Zuweisung löschen
+            if (panel != null)
+            {
+                panel.Hide();
+                panel.AssignPlayer(null);   // alte Zuweisung löschen
+            }
         }
 
-        // Nur echte, aktive Spieler zuweisen (aktuell nur 1)
+        // Nur echte, aktive Spieler zuweisen (aktuell 1-4 möglich)
         for (int i = 0; i < activePlayers.Count && i < panels.Length; i++)
         {
+            if (panels[i] == null)
+            {
+                Debug.LogWarning($"Panel {i} is null in playerUIPanels array!");
+                continue;
+            }
+
             var player = activePlayers[i];
-            var panel = panels[i];                    // P1 bekommt Spieler 0, P2 bekommt Spieler 1 usw.
+            var panel = panels[i];
 
             panel.AssignPlayer(player);
             panel.Show();                             // nur zugewiesene Panels einblenden
+
+            Debug.Log($"UI Assignment: {player.GetPlayerName()} → Panel {i + 1}");
         }
 
         // Initial-Update der sichtbaren Panels

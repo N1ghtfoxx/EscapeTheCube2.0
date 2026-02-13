@@ -150,6 +150,15 @@ public class Player : MonoBehaviour
         return playerName;
     }
 
+    /// <summary>
+    /// Sets the player's name (called by GameManager during spawn)
+    /// </summary>
+    public void SetPlayerName(string name)
+    {
+        playerName = name;
+        Debug.Log($"Player name set to: {playerName}");
+    }
+
     #endregion
 
     #region Hint Card Management
