@@ -643,6 +643,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681ba985bf41c6140b40d329ff8e5ce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardButtons: []
+  eventText: {fileID: 1719152794}
 --- !u!4 &521218530
 Transform:
   m_ObjectHideFlags: 0
@@ -826,6 +828,9 @@ MonoBehaviour:
   players:
   - {fileID: 1673300913}
   startField: {fileID: 1501155254}
+  OnNextPlayer:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &550457858
 Transform:
   m_ObjectHideFlags: 0
@@ -3173,6 +3178,7 @@ MonoBehaviour:
   - {fileID: 1115230299}
   - {fileID: 987384113}
   fields: {fileID: 2054043579}
+  theFields: []
 --- !u!4 &1764134901
 Transform:
   m_ObjectHideFlags: 0

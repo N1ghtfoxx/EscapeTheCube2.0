@@ -9,17 +9,16 @@ public class EnemyBertha : Enemy
     
     void Start()
     {
-        // TODO:         
-        // GameManager.Instance.OnNextPlayer.AddListener(OnNextPlayer);
+        GameManager.Instance.OnNextPlayer.AddListener(OnNextPlayer);
     }
 
     private void OnNextPlayer()
     {
         if (!isActive)
             return;
-        
+
         if (roundsInGame >= maxRoundsInGame)
-            IsActive = false;
+            CurrentField = null;
         
         if ((playerTurnsSinceActivation % GameManager.Instance.GetAllPlayers().Count) == 0)
             roundsInGame++;
@@ -36,7 +35,6 @@ public class EnemyBertha : Enemy
 
             if (!value)
             {
-                CurrentField = null;  
                 playerTurnsSinceActivation = 0;
                 roundsInGame = 0;
                 Debug.Log("Bertha leaves...");

@@ -56,8 +56,7 @@ public class EnemyManager : MonoBehaviour
         
         enemies[0].CurrentField = theFields[7];
         
-        // TODO: Subscribe to player change event to handle blocking Alf
-        // GameManager.Instance.OnNextPlayer.AddListener(OnPlayerChange);
+        GameManager.Instance.OnNextPlayer.AddListener(OnPlayerChange);
         
     }
 
@@ -65,7 +64,7 @@ public class EnemyManager : MonoBehaviour
     {
         if (enemies[0].IsBlocked)
         {
-            if (blockingAlfCounter != 0)
+            if (blockingAlfCounter == 0)
             {
                 UnblockAlf();
                 return;

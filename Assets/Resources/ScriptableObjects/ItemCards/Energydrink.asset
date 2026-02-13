@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardType: 0
   cardtext: Enegydrink
-  cardEffect: "+3 Hydration, n\xE4chster Zug verpflichtend]"
+  cardEffect: "+3 Hydration, n\xE4chster Zug verpflichtend"
   hydration: 3
   suspendedTurns: 0
   cardEffectType: 3

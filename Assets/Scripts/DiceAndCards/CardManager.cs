@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,7 @@ public class CardManager : MonoBehaviour
     private List<Card> ActionCardDictionary = new List<Card>();
 
     [SerializeField] private Button[] cardButtons;
+    [SerializeField] private TextMeshProUGUI eventText;
 
     private void Awake()
     {
@@ -76,6 +78,14 @@ public class CardManager : MonoBehaviour
             categoryList.Add(data);
         }
     }
+    
+    private void SetEventText(string text1,string text2)
+    {
+        if (eventText != null)
+        {
+            eventText.text = $"\n{text1}\n[{text2}]\n\n";
+        }
+    }
 
     public void HandleItemCard()
     {
@@ -90,6 +100,9 @@ public class CardManager : MonoBehaviour
             currPlayer.ChangeHydration(drawnCard.hydration);
             Debug.Log($"{currPlayer.GetPlayerName()}'s hydration changed by {drawnCard.hydration}. Current hydration: {currPlayer.GetHydration()}/{currPlayer.GetMaxHydration()}");
         }
+        
+        // display card text and effect in event text UI
+        SetEventText(drawnCard.cardtext, drawnCard.cardEffect);
         
         switch (drawnCard.cardEffectType)
         {
@@ -111,7 +124,7 @@ public class CardManager : MonoBehaviour
             case CardEffect.SecretPassage:
                 // Geheimgang: Direkter Teleport zu benachbarter Theke
                 Debug.Log($"{currPlayer.GetPlayerName()} activates secret passage - teleporting to adjacent counter.");
-                // TODO: Implement secret passage teleportation to adjacent counter
+                currPlayer.ActivateSecretPassage();
                 break;
 
             case CardEffect.None:
@@ -133,6 +146,9 @@ public class CardManager : MonoBehaviour
         Card drawnCard = ActionCardDictionary[randomIndex];
         Debug.Log($"{currPlayer.GetPlayerName()} drew Action Card: {drawnCard}");
         
+        // display card text and effect in event text UI
+        SetEventText(drawnCard.cardtext, drawnCard.cardEffect);
+        
         switch (drawnCard.cardEffectType)
         {
             case CardEffect.SpawnAlf:
@@ -150,7 +166,6 @@ public class CardManager : MonoBehaviour
             case CardEffect.BlockAlf:
                 // UteHelps: Blockiere Alf für eine Runde
                 Debug.Log($"Alf is blocked for one round...");
-                // TODO - Implement logic to unblock Alf after one round
                 EnemyManager.Instance.BlockAlf();
                 break;
 
@@ -182,8 +197,6 @@ public class CardManager : MonoBehaviour
                 // SpeiseplanAenderung: Spieler mit den meisten Hinweiskarten verliert einen
                 // Note: The description says "Hint Cards" but enum is "AccessCards" - following description
                 Debug.Log($"Finding player with most hint cards...");
-                // TODO: Track hint cards and remove one from player with most hint cards
-                
                 GameManager.Instance.GetPlayerWithMostHintCards().RemoveHintCard();
                 break;
 
