@@ -10,7 +10,7 @@ public class EnemyBertha : Enemy
     void Start()
     {
         // TODO:         
-        GameManagerOsmanEdit.Instance.OnNextPlayer.AddListener(OnNextPlayer);
+        // GameManager.Instance.OnNextPlayer.AddListener(OnNextPlayer);
     }
 
     private void OnNextPlayer()
@@ -21,7 +21,7 @@ public class EnemyBertha : Enemy
         if (roundsInGame >= maxRoundsInGame)
             IsActive = false;
         
-        if (playerTurnsSinceActivation % GameManagerOsmanEdit.Instance.GetAllPlayers().Count == 0)
+        if ((playerTurnsSinceActivation % GameManager.Instance.GetAllPlayers().Count) == 0)
             roundsInGame++;
         
         playerTurnsSinceActivation++;

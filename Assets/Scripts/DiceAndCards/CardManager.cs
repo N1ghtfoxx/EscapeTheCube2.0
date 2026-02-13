@@ -104,7 +104,7 @@ public class CardManager : MonoBehaviour
                 break;
 
             case CardEffect.NextTurnMandatory:
-                // Energydrink: n�chster Zug verpflichtend
+                // Energydrink: nächster Zug verpflichtend
                 Debug.Log($"{currPlayer.GetPlayerName()}'s next turn is mandatory.");
                 break;
 
