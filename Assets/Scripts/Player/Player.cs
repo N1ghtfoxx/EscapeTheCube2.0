@@ -345,34 +345,58 @@ public class Player : MonoBehaviour
 
     /// <summary>
     /// Activates secret passage effect (called by CardManager)
-    /// Teleports player to adjacent Theke (counter) field if available
+    /// Teleports player to the nearest Theke (counter) field in the entire game
     /// IMPORTANT: This is drawn as a card AFTER the turn, so it ends the turn and calls NextPlayer()
-    /// Flow: Player moves → draws card → Secret Passage activates → teleports → turn ends
+    /// Flow: Player moves → draws card → Secret Passage activates → teleports to nearest Theke → turn ends
     /// </summary>
     public void ActivateSecretPassage()
     {
-        Field targetTheke = null;
-        foreach (Field neighbour in currentField.GetNeighbours())
-        {
-            if (neighbour is Theke1)
-            {
-                targetTheke = neighbour;
-                break;
-            }
-        }
+        Field targetTheke = FindNearestTheke();
 
         if (targetTheke != null)
         {
-            // Use MoveToField() to handle all movement logic including NextPlayer()
+            // use MoveToField() to handle all movement logic including NextPlayer()
             MoveToField(targetTheke);
-            Debug.Log($"{GetPlayerName()} teleported to adjacent Theke via secret passage.");
+            Debug.Log($"{GetPlayerName()} teleported to nearest Theke via secret passage.");
         }
         else
         {
-            Debug.Log($"{GetPlayerName()} - no adjacent Theke found for secret passage. Card effect wasted.");
-            // Even if no Theke found, the turn still ends (card was drawn)
+            Debug.Log($"{GetPlayerName()} - no Theke found in game. Card effect wasted.");
+            // even if no theke found, the turn still ends (card was drawn)
             GameManager.Instance.NextPlayer();
         }
+    }
+
+    /// <summary>
+    /// Finds the nearest Theke field in the entire game
+    /// Returns null if no Theke exists
+    /// Uses ITheke interface to find both Theke1 and Theke2 fields
+    /// </summary>
+    private Field FindNearestTheke()
+    {
+        // get all fields in teh game via GameManager
+        List<Field> allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
+
+        Field nearestTheke = null;
+        float shortestDistance = float.MaxValue;
+
+        foreach (Field field in allFields)
+        {
+            // check if this fiel is a theke
+            if (field is ITheke)
+            {
+                // calculate distance from player's current position to this field
+                float distance = Vector3.Distance(transform.position, field.transform.position);
+
+                // update nearest if this one is closer
+                if (distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    nearestTheke = field;
+                }
+            }
+        }
+        return nearestTheke;
     }
 
     #endregion
