@@ -581,6 +581,9 @@ MonoBehaviour:
   hydrationText: {fileID: 354442572}
   cluesText: {fileID: 354442571}
   keycardsText: {fileID: 354442570}
+  playerNameText: {fileID: 0}
+  playerIcon: {fileID: 0}
+  colorIndicator: {fileID: 0}
 --- !u!114 &354442570 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2185396166455563277, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
@@ -825,13 +828,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdebe95637117f047a54093144de58d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 1364833130938920672, guid: 811966dae17ee87488431f0cf4036309, type: 3}
   startField: {fileID: 1501155254}
-  playerUiPanels:
+  playerUIPanels:
   - {fileID: 354442569}
   - {fileID: 1337160470}
   - {fileID: 867799016}
   - {fileID: 1838903405}
+  useTestPlayers: 1
+  testPlayerSetups:
+  - playerName: SpielerGelb
+    characterSprite: {fileID: 1597308222916531928, guid: d3ea6ff79cc197242811ce36383267f9, type: 3}
+    spawn: 0
+  - playerName: SpielerGruen
+    characterSprite: {fileID: -5132276040804035418, guid: 5b2245c6a714530498c497cddafbb4a6, type: 3}
+    spawn: 1
+  - playerName: SpielerRot
+    characterSprite: {fileID: -3675885639985926568, guid: 7933359064df50648b9e6a8bb224f195, type: 3}
+    spawn: 0
+  - playerName: SpielerViolett
+    characterSprite: {fileID: -462850340662727132, guid: 0d65933892f47db438354e81d8dd0340, type: 3}
+    spawn: 1
   OnNextPlayer:
     m_PersistentCalls:
       m_Calls: []
@@ -1798,6 +1815,9 @@ MonoBehaviour:
   hydrationText: {fileID: 867799014}
   cluesText: {fileID: 867799013}
   keycardsText: {fileID: 867799012}
+  playerNameText: {fileID: 0}
+  playerIcon: {fileID: 0}
+  colorIndicator: {fileID: 0}
 --- !u!114 &890142214 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5179994823788396200, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -2237,6 +2257,18 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -5132276040804035418, guid: 5b2245c6a714530498c497cddafbb4a6, type: 3}
+    - target: {fileID: 7923636074689400529, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7923636074689400529, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7923636074689400529, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2303,6 +2335,9 @@ MonoBehaviour:
   hydrationText: {fileID: 1337160468}
   cluesText: {fileID: 1337160467}
   keycardsText: {fileID: 1337160466}
+  playerNameText: {fileID: 0}
+  playerIcon: {fileID: 0}
+  colorIndicator: {fileID: 0}
 --- !u!1 &1339571217
 GameObject:
   m_ObjectHideFlags: 0
@@ -3312,6 +3347,9 @@ MonoBehaviour:
   hydrationText: {fileID: 1838903403}
   cluesText: {fileID: 1838903402}
   keycardsText: {fileID: 1838903401}
+  playerNameText: {fileID: 0}
+  playerIcon: {fileID: 0}
+  colorIndicator: {fileID: 0}
 --- !u!1 &2054043579 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6876443155875570323, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}

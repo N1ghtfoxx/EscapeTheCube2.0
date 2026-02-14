@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Player : MonoBehaviour
 {
@@ -61,7 +63,30 @@ public class Player : MonoBehaviour
         }
 
         currentField = newField;
-        transform.position = newField.transform.position;
+
+        // Calculate position with offset if multiple players on same field
+        Vector3 targetPosition = newField.transform.position;
+
+        // Get all players on this field
+        List<Player> playersOnField = GameManager.Instance.GetAllPlayers()
+            .Where(p => p.GetCurrentField() == newField && p != this)
+            .ToList();
+
+        if (playersOnField.Count > 0)
+        {
+            // There are other players here - add offset in a circle
+            int totalPlayers = playersOnField.Count + 1; // +1 for this player
+            int myIndex = playersOnField.Count; // This player is the newest arrival
+
+            float angle = (360f / totalPlayers) * myIndex;
+            float radius = 0.15f; // Kleinerer Abstand - bleiben auf dem Field
+            float offsetX = Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
+            float offsetY = Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
+
+            targetPosition += new Vector3(offsetX, offsetY, 0);
+        }
+
+        transform.position = targetPosition;
 
         // Notify the field that player arrived
         newField.OnPlayerArrived(this);
@@ -80,14 +105,16 @@ public class Player : MonoBehaviour
 
     /// <summary>
     /// Sets the player's starting field (called during initialization)
-    /// Moves player to the field's position
+    /// Optionally moves player to the field's position
     /// </summary>
-    public void SetCurrentField(Field field)
+    /// <param name="field">The field to assign</param>
+    /// <param name="moveToPosition">If true, moves player to field position. If false, keeps current position.</param>
+    public void SetCurrentField(Field field, bool moveToPosition = true)
     {
         currentField = field;
 
-        // Move player to the field's position
-        if (field != null)
+        // Move player to the field's position (unless explicitly disabled)
+        if (field != null && moveToPosition)
         {
             transform.position = field.transform.position;
         }
