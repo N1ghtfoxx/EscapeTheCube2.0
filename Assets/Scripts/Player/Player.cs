@@ -51,7 +51,6 @@ public class Player : MonoBehaviour
         else
         {
             // Power outage active - no hydration loss
-            // TODO: implement no hyration loss?
             Debug.Log($"{GetPlayerName()} moved without hydration loss (Power Outage active).");
         }
 
@@ -106,6 +105,8 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Sets the player's starting field (called during initialization)
     /// Optionally moves player to the field's position
+    /// NOTE: Does NOT trigger OnPlayerArrived() or NextPlayer() - use for silent teleports/initialization only
+    /// For normal movement, use MoveToField() instead
     /// </summary>
     /// <param name="field">The field to assign</param>
     /// <param name="moveToPosition">If true, moves player to field position. If false, keeps current position.</param>
@@ -345,6 +346,8 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Activates secret passage effect (called by CardManager)
     /// Teleports player to adjacent Theke (counter) field if available
+    /// IMPORTANT: This is drawn as a card AFTER the turn, so it ends the turn and calls NextPlayer()
+    /// Flow: Player moves → draws card → Secret Passage activates → teleports → turn ends
     /// </summary>
     public void ActivateSecretPassage()
     {
@@ -360,12 +363,15 @@ public class Player : MonoBehaviour
 
         if (targetTheke != null)
         {
+            // Use MoveToField() to handle all movement logic including NextPlayer()
             MoveToField(targetTheke);
             Debug.Log($"{GetPlayerName()} teleported to adjacent Theke via secret passage.");
         }
         else
         {
-            Debug.Log($"{GetPlayerName()} no adjacent Theke found for secret passage.");
+            Debug.Log($"{GetPlayerName()} - no adjacent Theke found for secret passage. Card effect wasted.");
+            // Even if no Theke found, the turn still ends (card was drawn)
+            GameManager.Instance.NextPlayer();
         }
     }
 

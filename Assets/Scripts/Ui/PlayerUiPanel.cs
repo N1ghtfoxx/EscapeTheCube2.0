@@ -9,9 +9,9 @@ public class PlayerUiPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI keycardsText;
 
     [Header("Player Identification (Optional)")]
-    [SerializeField] private TextMeshProUGUI playerNameText; // Zeigt Namen
-    [SerializeField] private Image playerIcon; // Zeigt Sprite
-    [SerializeField] private Image colorIndicator; // Farbiger Hintergrund/Balken
+    [SerializeField] private TextMeshProUGUI playerNameText;
+    [SerializeField] private Image playerIcon;
+    [SerializeField] private Image colorIndicator;
 
     private Player assignedPlayer;
 
@@ -49,7 +49,6 @@ public class PlayerUiPanel : MonoBehaviour
         }
 
         // Update player icon (shows the actual sprite)
-        // If playerIcon not assigned, try to find Image on this GameObject
         Image iconImage = playerIcon;
         if (iconImage == null)
         {
@@ -60,7 +59,6 @@ public class PlayerUiPanel : MonoBehaviour
         {
             iconImage.sprite = playerSprite.sprite;
             iconImage.color = playerSprite.color;
-            Debug.Log($"Updated {gameObject.name} icon to {playerSprite.sprite?.name} with color {playerSprite.color}");
         }
 
         // Update color indicator (background or border)

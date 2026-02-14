@@ -72,7 +72,7 @@ public class UiManager : MonoBehaviour
             yield return new WaitForSeconds(messageDuration);
         }
 
-        // clear text after last nessage
+        // clear text after last message
         eventText.text = "";
         isDisplayingMessage = false;
     }

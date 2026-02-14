@@ -848,7 +848,7 @@ MonoBehaviour:
     spawn: 0
   - playerName: SpielerViolett
     characterSprite: {fileID: -462850340662727132, guid: 0d65933892f47db438354e81d8dd0340, type: 3}
-    spawn: 1
+    spawn: 0
   OnNextPlayer:
     m_PersistentCalls:
       m_Calls: []
