@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 138969512}
   - component: {fileID: 138969511}
   - component: {fileID: 138969510}
+  - component: {fileID: 138969513}
   m_Layer: 5
   m_Name: EventCard
   m_TagString: Untagged
@@ -202,9 +203,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 521218529}
-        m_TargetAssemblyTypeName: CardManager, Assembly-CSharp
-        m_MethodName: HandleActionCard
+      - m_Target: {fileID: 138969513}
+        m_TargetAssemblyTypeName: CardDeckButtonHandler, Assembly-CSharp
+        m_MethodName: OnButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -252,6 +253,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 138969508}
   m_CullTransparentMesh: 1
+--- !u!114 &138969513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138969508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5e89bfd687d24947bd74a58de0ae4a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deckType: 1
 --- !u!1 &225296507
 GameObject:
   m_ObjectHideFlags: 0
@@ -581,6 +595,9 @@ MonoBehaviour:
   hydrationText: {fileID: 354442572}
   cluesText: {fileID: 354442571}
   keycardsText: {fileID: 354442570}
+  playerNameText: {fileID: 0}
+  playerIcon: {fileID: 0}
+  colorIndicator: {fileID: 0}
 --- !u!114 &354442570 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2185396166455563277, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
@@ -806,6 +823,7 @@ GameObject:
   m_Component:
   - component: {fileID: 550457858}
   - component: {fileID: 550457857}
+  - component: {fileID: 550457859}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -825,9 +843,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdebe95637117f047a54093144de58d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  players:
-  - {fileID: 1673300913}
+  playerPrefab: {fileID: 1364833130938920672, guid: 811966dae17ee87488431f0cf4036309, type: 3}
   startField: {fileID: 1501155254}
+  playerUIPanels:
+  - {fileID: 354442569}
+  - {fileID: 1337160470}
+  - {fileID: 867799016}
+  - {fileID: 1838903405}
+  useTestPlayers: 1
+  testPlayerSetups:
+  - playerName: SpielerGelb
+    characterSprite: {fileID: 1597308222916531928, guid: d3ea6ff79cc197242811ce36383267f9, type: 3}
+    spawn: 0
+  - playerName: SpielerGruen
+    characterSprite: {fileID: -5132276040804035418, guid: 5b2245c6a714530498c497cddafbb4a6, type: 3}
+    spawn: 1
+  - playerName: SpielerRot
+    characterSprite: {fileID: -3675885639985926568, guid: 7933359064df50648b9e6a8bb224f195, type: 3}
+    spawn: 0
+  - playerName: SpielerViolett
+    characterSprite: {fileID: -462850340662727132, guid: 0d65933892f47db438354e81d8dd0340, type: 3}
+    spawn: 1
   OnNextPlayer:
     m_PersistentCalls:
       m_Calls: []
@@ -846,6 +882,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &550457859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 550457856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeadb6337fb3f4242a773ca7afb80235, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemCardButton: {fileID: 1287042016}
+  actionCardButton: {fileID: 138969510}
 --- !u!114 &583424365 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2438850554923468322, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -1790,67 +1840,9 @@ MonoBehaviour:
   hydrationText: {fileID: 867799014}
   cluesText: {fileID: 867799013}
   keycardsText: {fileID: 867799012}
---- !u!1001 &889910120
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1364833130938920672, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.14
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.22
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1598722651174473315, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8151755617302970657, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 811966dae17ee87488431f0cf4036309, type: 3}
+  playerNameText: {fileID: 0}
+  playerIcon: {fileID: 0}
+  colorIndicator: {fileID: 0}
 --- !u!114 &890142214 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5179994823788396200, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -2057,6 +2049,7 @@ GameObject:
   - component: {fileID: 1287042018}
   - component: {fileID: 1287042017}
   - component: {fileID: 1287042016}
+  - component: {fileID: 1287042019}
   m_Layer: 5
   m_Name: ItemCard
   m_TagString: Untagged
@@ -2128,9 +2121,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 521218529}
-        m_TargetAssemblyTypeName: CardManager, Assembly-CSharp
-        m_MethodName: HandleItemCard
+      - m_Target: {fileID: 1287042019}
+        m_TargetAssemblyTypeName: CardDeckButtonHandler, Assembly-CSharp
+        m_MethodName: OnButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2178,6 +2171,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1287042014}
   m_CullTransparentMesh: 1
+--- !u!114 &1287042019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287042014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5e89bfd687d24947bd74a58de0ae4a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deckType: 0
 --- !u!1001 &1337160464
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2352,6 +2358,9 @@ MonoBehaviour:
   hydrationText: {fileID: 1337160468}
   cluesText: {fileID: 1337160467}
   keycardsText: {fileID: 1337160466}
+  playerNameText: {fileID: 0}
+  playerIcon: {fileID: 0}
+  colorIndicator: {fileID: 0}
 --- !u!1 &1339571217
 GameObject:
   m_ObjectHideFlags: 0
@@ -2987,17 +2996,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4216c2de3813f1f4990ef971866c5321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1673300913 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8667943611932132761, guid: 811966dae17ee87488431f0cf4036309, type: 3}
-  m_PrefabInstance: {fileID: 889910120}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce14f3938851e0148b3487052e3a672d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1673482011 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2795716222088066922, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -3368,6 +3366,9 @@ MonoBehaviour:
   hydrationText: {fileID: 1838903403}
   cluesText: {fileID: 1838903402}
   keycardsText: {fileID: 1838903401}
+  playerNameText: {fileID: 0}
+  playerIcon: {fileID: 0}
+  colorIndicator: {fileID: 0}
 --- !u!1 &2054043579 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6876443155875570323, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -3485,7 +3486,6 @@ SceneRoots:
   - {fileID: 1442159493}
   - {fileID: 2087293384}
   - {fileID: 1433700015}
-  - {fileID: 889910120}
   - {fileID: 550457858}
   - {fileID: 596512721}
   - {fileID: 521218530}
