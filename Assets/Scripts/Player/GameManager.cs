@@ -340,11 +340,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void NextPlayer()
     {
-        // Reset movement flag when switching to next player
-        playerMovedThisTurn = false;
-
         // Switch to next player
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
+
+        // Reset movement flag for the NEW player BEFORE event
+        // This ensures CardButtonController sees the correct state for the new player
+        playerMovedThisTurn = false;
 
         // Handle Power Outage countdown AFTER switching player
         if (isPowerOutageActive)
@@ -359,6 +360,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // Invoke event AFTER resetting movement flag
+        // CardButtonController will now see playerMovedThisTurn = false for new player
         OnNextPlayer?.Invoke();
 
         UpdateClickableFields();
@@ -400,6 +403,20 @@ public class GameManager : MonoBehaviour
                 neighbour.SetClickable(true);
             }
         }
+    }
+
+    /// <summary>
+    /// Disables all fields (called after player movement)
+    /// Player can only draw cards after moving, not move again
+    /// Fields will be re-enabled when next player's turn starts
+    /// </summary>
+    public void DisableAllFields()
+    {
+        foreach (Field field in allFields)
+        {
+            field.SetClickable(false);
+        }
+        Debug.Log("All fields disabled - player can now only draw cards");
     }
 
     /// <summary>
@@ -475,6 +492,9 @@ public class GameManager : MonoBehaviour
     public void SetPlayerMoved(bool moved)
     {
         playerMovedThisTurn = moved;
+
+        // Immediately update card button states after movement
+        UpdateCardButtons();
     }
 
     /// <summary>
@@ -485,6 +505,18 @@ public class GameManager : MonoBehaviour
     public bool DidPlayerMoveThisTurn()
     {
         return playerMovedThisTurn;
+    }
+
+    /// <summary>
+    /// Updates the card button states by finding and calling CardButtonController
+    /// </summary>
+    private void UpdateCardButtons()
+    {
+        CardButtonController controller = FindFirstObjectByType<CardButtonController>();
+        if (controller != null)
+        {
+            controller.UpdateCardButtonStates();
+        }
     }
 
     #endregion
@@ -524,6 +556,17 @@ public class GameManager : MonoBehaviour
             }
         }
         return maxPlayer;
+    }
+
+    /// <summary>
+    /// Called when a card is drawn (by CardManager button handlers)
+    /// Ends the current player's turn by calling NextPlayer()
+    /// NOTE: Some cards (like Secret Passage) handle their own NextPlayer() call in Player.cs
+    /// </summary>
+    public void OnCardDrawn()
+    {
+        Debug.Log($"{GetCurrentPlayer().GetPlayerName()} drew a card - ending turn.");
+        NextPlayer();
     }
 
     #endregion

@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 138969512}
   - component: {fileID: 138969511}
   - component: {fileID: 138969510}
+  - component: {fileID: 138969513}
   m_Layer: 5
   m_Name: EventCard
   m_TagString: Untagged
@@ -202,9 +203,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 521218529}
-        m_TargetAssemblyTypeName: CardManager, Assembly-CSharp
-        m_MethodName: HandleActionCard
+      - m_Target: {fileID: 138969513}
+        m_TargetAssemblyTypeName: CardDeckButtonHandler, Assembly-CSharp
+        m_MethodName: OnButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -252,6 +253,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 138969508}
   m_CullTransparentMesh: 1
+--- !u!114 &138969513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138969508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5e89bfd687d24947bd74a58de0ae4a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deckType: 1
 --- !u!1 &225296507
 GameObject:
   m_ObjectHideFlags: 0
@@ -814,6 +828,7 @@ GameObject:
   m_Component:
   - component: {fileID: 550457858}
   - component: {fileID: 550457857}
+  - component: {fileID: 550457859}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -853,7 +868,7 @@ MonoBehaviour:
     spawn: 0
   - playerName: SpielerViolett
     characterSprite: {fileID: -462850340662727132, guid: 0d65933892f47db438354e81d8dd0340, type: 3}
-    spawn: 0
+    spawn: 1
   OnNextPlayer:
     m_PersistentCalls:
       m_Calls: []
@@ -872,6 +887,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &550457859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 550457856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeadb6337fb3f4242a773ca7afb80235, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemCardButton: {fileID: 1287042016}
+  actionCardButton: {fileID: 138969510}
 --- !u!114 &583424365 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2438850554923468322, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -2061,6 +2090,7 @@ GameObject:
   - component: {fileID: 1287042018}
   - component: {fileID: 1287042017}
   - component: {fileID: 1287042016}
+  - component: {fileID: 1287042019}
   m_Layer: 5
   m_Name: ItemCard
   m_TagString: Untagged
@@ -2132,9 +2162,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 521218529}
-        m_TargetAssemblyTypeName: CardManager, Assembly-CSharp
-        m_MethodName: HandleItemCard
+      - m_Target: {fileID: 1287042019}
+        m_TargetAssemblyTypeName: CardDeckButtonHandler, Assembly-CSharp
+        m_MethodName: OnButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2182,6 +2212,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1287042014}
   m_CullTransparentMesh: 1
+--- !u!114 &1287042019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287042014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5e89bfd687d24947bd74a58de0ae4a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deckType: 0
 --- !u!1001 &1337160464
 PrefabInstance:
   m_ObjectHideFlags: 0

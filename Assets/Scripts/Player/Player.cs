@@ -32,10 +32,16 @@ public class Player : MonoBehaviour
     /// Moves player to a new field
     /// Handles hydration loss (unless Power Outage is active)
     /// Resets Energy Drink mandatory turn flag if active
-    /// Triggers field arrival events and player switching
+    /// Triggers field arrival events
+    /// NOTE: Does NOT end the turn! Player can still draw cards after moving.
+    /// Turn ends when player draws a card via CardDeckButtonHandler -> GameManager.OnCardDrawn()
     /// </summary>
     public void MoveToField(Field newField)
     {
+        // CRITICAL: Disable all fields IMMEDIATELY to prevent multiple moves
+        // This must be first to prevent the player from clicking another field
+        GameManager.Instance.DisableAllFields();
+
         // Signal that player moved this turn
         GameManager.Instance.SetPlayerMoved(true);
 
@@ -90,8 +96,8 @@ public class Player : MonoBehaviour
         // Notify the field that player arrived
         newField.OnPlayerArrived(this);
 
-        // Switch to the next player
-        GameManager.Instance.NextPlayer();
+        // DO NOT call NextPlayer() here!
+        // Turn ends when player draws a card (CardDeckButtonHandler -> GameManager.OnCardDrawn)
     }
 
     /// <summary>
@@ -346,8 +352,10 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Activates secret passage effect (called by CardManager)
     /// Teleports player to the nearest Theke (counter) field in the entire game
-    /// IMPORTANT: This is drawn as a card AFTER the turn, so it ends the turn and calls NextPlayer()
-    /// Flow: Player moves → draws card → Secret Passage activates → teleports to nearest Theke → turn ends
+    /// IMPORTANT: This is drawn as a card AFTER a turn
+    /// Flow: Player moves → draws Item card → Secret Passage activates → teleports to nearest Theke → turn ends
+    /// NOTE: Does NOT call NextPlayer() - that's handled by the card button handler
+    /// NOTE: Does NOT set playerMovedThisTurn flag - this is a teleport from a card effect, not a normal move
     /// </summary>
     public void ActivateSecretPassage()
     {
@@ -355,16 +363,25 @@ public class Player : MonoBehaviour
 
         if (targetTheke != null)
         {
-            // use MoveToField() to handle all movement logic including NextPlayer()
-            MoveToField(targetTheke);
-            Debug.Log($"{GetPlayerName()} teleported to nearest Theke via secret passage.");
+            // Teleport to the nearest Theke
+            // Use SetCurrentField to avoid triggering movement logic
+            SetCurrentField(targetTheke, moveToPosition: true);
+
+            // Trigger the field's arrival event (for special field effects)
+            targetTheke.OnPlayerArrived(this);
+
+            // Update clickable fields but DON'T set playerMovedThisTurn flag
+            // The player should NOT be able to move again after this teleport
+            GameManager.Instance.UpdateClickableFields();
+
+            Debug.Log($"{GetPlayerName()} teleported to nearest Theke via secret passage. Turn ends.");
         }
         else
         {
             Debug.Log($"{GetPlayerName()} - no Theke found in game. Card effect wasted.");
-            // even if no theke found, the turn still ends (card was drawn)
-            GameManager.Instance.NextPlayer();
         }
+
+        // Turn ending is handled by CardDeckButtonHandler -> GameManager.OnCardDrawn()
     }
 
     /// <summary>
