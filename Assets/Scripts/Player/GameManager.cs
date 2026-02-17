@@ -33,18 +33,6 @@ public class GameManager : MonoBehaviour
     [Header("UI Panels")]
     [SerializeField] private PlayerUiPanel[] playerUIPanels; // Assign panels in correct order (Player 1-4)
 
-    [Header("Testing (Remove when StartHub is ready)")]
-    [SerializeField] private bool useTestPlayers = false; // Toggle im Inspector
-    [SerializeField] private TestPlayerSetup[] testPlayerSetups; // Flexible Spieler-Konfiguration
-
-    [System.Serializable]
-    public class TestPlayerSetup
-    {
-        public string playerName = "TestPlayer";
-        public Sprite characterSprite;
-        public bool spawn = true; // Toggle pro Spieler
-    }
-
     #endregion
 
     #region Private Fields
@@ -88,10 +76,10 @@ public class GameManager : MonoBehaviour
         // Find all fields in the scene
         allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
 
-        // Spawn player from StartHub selection
-        SpawnPlayerFromSelection();
+        // Spawn players from StartHub selection
+        SpawnPlayersFromSelection();
 
-        // Set starting position for spawned player
+        // Set starting position for all spawned players
         if (players.Count > 0 && startField != null)
         {
             players[0].SetCurrentField(startField);
@@ -102,51 +90,38 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawns all player characters selected in StartHub
-    /// Uses single player prefab and applies selected character sprites
+    /// Spawns all player characters selected in StartHub.
+    /// Uses a single player prefab and applies the chosen CharacterData sprite per player.
     /// </summary>
-    private void SpawnPlayerFromSelection()
+    private void SpawnPlayersFromSelection()
     {
-        // TESTING: Check if test mode is enabled
-        if (useTestPlayers)
-        {
-            SpawnTestPlayers();
-            return;
-        }
-
-        // Check if PlayerData exists and has valid selections
         if (PlayerData.Instance == null || !PlayerData.Instance.HasSelection())
         {
-            Debug.LogWarning("No player selection found! Enable 'Use Test Players' in GameManager for testing.");
+            Debug.LogError("[GameManager] No player selection found in PlayerData! " +
+                           "Make sure players complete the StartScreen before entering MainScene.");
             return;
         }
 
-        // Check if player prefab is assigned
         if (playerPrefab == null)
         {
-            Debug.LogError("Player Prefab is not assigned in GameManager!");
+            Debug.LogError("[GameManager] Player Prefab is not assigned in GameManager!");
             return;
         }
 
-        // Get all player selections
         var allSelections = PlayerData.Instance.GetAllPlayerSelections();
+        Debug.Log($"[GameManager] Spawning {allSelections.Count} player(s) from StartHub selection.");
 
-        Debug.Log($"Spawning {allSelections.Count} player(s)");
-
-        // Spawn each player
         for (int i = 0; i < allSelections.Count; i++)
         {
             var selection = allSelections[i];
 
-            // Calculate spawn position (offset if multiple players)
+            // Calculate spawn position – spread players in a small circle so they don't overlap
             Vector3 spawnPosition = startField != null ? startField.transform.position : Vector3.zero;
 
-            // Add small offset for multiple players so they don't overlap
             if (allSelections.Count > 1)
             {
-                // Verteile Spieler in einem kleinen Kreis statt nur horizontal
                 float angle = (360f / allSelections.Count) * i;
-                float radius = 0.15f; // Kleinerer Abstand - bleiben auf dem Field
+                float radius = 0.15f;
                 float offsetX = Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
                 float offsetY = Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
                 spawnPosition += new Vector3(offsetX, offsetY, 0);
@@ -154,7 +129,7 @@ public class GameManager : MonoBehaviour
 
             // Spawn the player prefab
             GameObject playerObject = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
-            playerObject.name = $"Player_{i + 1}_{selection.playerName}"; // Readable name in hierarchy
+            playerObject.name = $"Player_{i + 1}_{selection.playerName}";
 
             // Get Player component and configure it
             Player playerComponent = playerObject.GetComponent<Player>();
@@ -163,154 +138,41 @@ public class GameManager : MonoBehaviour
                 // Set player name from StartHub input
                 playerComponent.SetPlayerName(selection.playerName);
 
-                // Apply character sprite to the spawned player
+                // Apply character sprite
                 SpriteRenderer spriteRenderer = playerObject.GetComponent<SpriteRenderer>();
-                if (spriteRenderer != null && selection.characterData != null)
+                if (spriteRenderer != null && selection.characterSprite != null)
                 {
-                    spriteRenderer.sprite = selection.characterData.characterSprite;
-                    Debug.Log($"Player {i + 1} applied sprite: {selection.characterData.characterSprite.name}");
+                    spriteRenderer.sprite = selection.characterSprite;
+                    spriteRenderer.color = Color.white; // Preserve original sprite colours
+                    Debug.Log($"[GameManager] Player {i + 1} sprite applied: {selection.characterSprite.name}");
                 }
 
-                // Optional: Apply character-specific stats
-                if (selection.characterData != null && selection.characterData.startingHydration > 0)
-                {
-                    // If you want different starting hydration per character
-                    // You'd need to add a method like SetStartingHydration(int amount) to Player.cs
-                    // playerComponent.SetStartingHydration(selection.characterData.startingHydration);
-                }
 
-                // Add to players list
                 players.Add(playerComponent);
-
-                Debug.Log($"Player {i + 1} spawned: {selection.playerName} as {selection.characterData.characterName}");
+                Debug.Log($"[GameManager] Player {i + 1} spawned: {selection.playerName}");
             }
             else
             {
-                Debug.LogError("Spawned player prefab doesn't have Player component!");
+                Debug.LogError("[GameManager] Spawned player prefab doesn't have a Player component!");
                 Destroy(playerObject);
             }
         }
 
-        // Set all players to start field (but keep their spawn positions with offset!)
+        // Assign all players to the start field without moving them (keep circular offset)
         if (startField != null)
         {
             foreach (var player in players)
             {
-                player.SetCurrentField(startField, moveToPosition: false); // Keep spawn offset!
+                player.SetCurrentField(startField, moveToPosition: false);
             }
         }
     }
-
-    #region TESTING ONLY - Remove when StartHub is ready
-
-    /// <summary>
-    /// TEMPORÄR: Spawnt Test-Spieler ohne StartHub
-    /// LÖSCHE DIESE METHODE wenn StartHub fertig ist!
-    /// </summary>
-    private void SpawnTestPlayers()
-    {
-        if (playerPrefab == null)
-        {
-            Debug.LogError("Player Prefab is not assigned in GameManager!");
-            return;
-        }
-
-        if (testPlayerSetups == null || testPlayerSetups.Length == 0)
-        {
-            Debug.LogWarning("[TEST MODE] No test player setups configured!");
-            return;
-        }
-
-        // Zähle wie viele Spieler spawnen sollen
-        var playersToSpawn = testPlayerSetups.Where(setup => setup.spawn).ToList();
-
-        Debug.Log($"[TEST MODE] Spawning {playersToSpawn.Count} test player(s)");
-
-        for (int i = 0; i < playersToSpawn.Count; i++)
-        {
-            var setup = playersToSpawn[i];
-
-            // Calculate spawn position (offset if multiple players)
-            Vector3 spawnPosition = startField != null ? startField.transform.position : Vector3.zero;
-
-            if (playersToSpawn.Count > 1)
-            {
-                // Verteile Spieler in einem kleinen Kreis
-                float angle = (360f / playersToSpawn.Count) * i;
-                float radius = 0.5f; // Größerer Abstand damit sie sichtbar getrennt sind
-                float offsetX = Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
-                float offsetY = Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
-                spawnPosition += new Vector3(offsetX, offsetY, 0);
-            }
-
-            // Spawn the player prefab
-            GameObject playerObject = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
-            playerObject.name = $"TestPlayer_{i + 1}_{setup.playerName}";
-
-            // Get Player component and configure it
-            Player playerComponent = playerObject.GetComponent<Player>();
-            if (playerComponent != null)
-            {
-                // Set test name
-                playerComponent.SetPlayerName(setup.playerName);
-
-                // Apply sprite if assigned
-                SpriteRenderer spriteRenderer = playerObject.GetComponent<SpriteRenderer>();
-                if (spriteRenderer != null && setup.characterSprite != null)
-                {
-                    // Sprite zugewiesen - nutze es OHNE Einfärbung
-                    spriteRenderer.sprite = setup.characterSprite;
-                    spriteRenderer.color = Color.white; // Original-Farben beibehalten
-
-                    Debug.Log($"[TEST] Player {i + 1} ({setup.playerName}) sprite: {setup.characterSprite.name} (Original colors preserved)");
-                }
-                else if (spriteRenderer != null)
-                {
-                    // KEIN Sprite - färbe als Fallback ein
-                    Color[] fallbackColors = {
-                        new Color(1f, 1f, 0f),      // Gelb
-                        new Color(0f, 1f, 0f),      // Grün
-                        new Color(1f, 0f, 0f),      // Rot
-                        new Color(0.5f, 0f, 0.5f)   // Violett
-                    };
-                    spriteRenderer.color = fallbackColors[i % fallbackColors.Length];
-                    Debug.Log($"[TEST] Player {i + 1} ({setup.playerName}) color: {fallbackColors[i % fallbackColors.Length]} (no sprite assigned)");
-                }
-
-                // Add to players list
-                players.Add(playerComponent);
-
-                Debug.Log($"[TEST] Player {i + 1} spawned: {setup.playerName}");
-            }
-            else
-            {
-                Debug.LogError("Spawned player prefab doesn't have Player component!");
-                Destroy(playerObject);
-            }
-        }
-
-        // Set all players to start field (but keep their spawn positions with offset!)
-        if (startField != null)
-        {
-            foreach (var player in players)
-            {
-                player.SetCurrentField(startField, moveToPosition: false); // Keep spawn offset!
-            }
-        }
-    }
-
-    #endregion
 
     private void SubscribeToDiceEvents()
     {
-        // Subscribe to dice events if DiceManager exists
         if (DiceManager.Instance != null)
         {
-            // OnDiceRoll will be added by your teammate
-            // Uncomment this line when DiceManager.OnDiceRoll is implemented:
             DiceManager.Instance.OnDiceRoll.AddListener(OnDiceRollStarted);
-
-            // OnDiceResult already exists in DiceManager
             DiceManager.Instance.OnDiceResult.AddListener(OnDiceRollFinished);
         }
     }
@@ -582,7 +444,6 @@ public class GameManager : MonoBehaviour
         isGameLocked = true;
         Debug.Log("Dice rolling - game locked!");
 
-        // Make all fields non-clickable during dice roll
         foreach (Field field in allFields)
         {
             field.SetClickable(false);
@@ -599,7 +460,6 @@ public class GameManager : MonoBehaviour
 
         isGameLocked = false;
 
-        // Restore clickable fields
         UpdateClickableFields();
 
         // TODO: Handle dice result (e.g., spawn/move Alf)
@@ -626,14 +486,13 @@ public class GameManager : MonoBehaviour
 
         List<Player> activePlayers = GetAllPlayers();
 
-        // Safety check
         if (panels == null || panels.Length == 0)
         {
             Debug.LogError("No PlayerUiPanels found! Assign them in GameManager or add them to the scene.");
             return;
         }
 
-        // Zuerst alle UIs ausblenden
+        // Hide all panels first
         foreach (var panel in panels)
         {
             if (panel != null)
@@ -643,8 +502,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // SPRITE-BASIERTE ZUWEISUNG
-        // Vergleiche das Sprite des Spielers mit dem Sprite im UI-Panel
+        // Sprite-based assignment: match player sprite to panel sprite
         foreach (var player in activePlayers)
         {
             SpriteRenderer playerSprite = player.GetComponent<SpriteRenderer>();
@@ -654,23 +512,17 @@ public class GameManager : MonoBehaviour
                 continue;
             }
 
-            // Finde das Panel mit dem gleichen Sprite
             bool matched = false;
             for (int i = 0; i < panels.Length; i++)
             {
                 if (panels[i] == null) continue;
-
-                // Prüfe ob Panel schon belegt
                 if (panels[i].GetAssignedPlayer() != null) continue;
 
-                // Hole das Sprite des Panels (P1/P2/P3/P4 Image Component)
                 Image panelImage = panels[i].GetComponent<Image>();
                 if (panelImage == null || panelImage.sprite == null) continue;
 
-                // Vergleiche Sprites
                 if (panelImage.sprite == playerSprite.sprite)
                 {
-                    // Match gefunden!
                     panels[i].AssignPlayer(player);
                     panels[i].Show();
                     Debug.Log($"UI Assignment: {player.GetPlayerName()} (Sprite: {playerSprite.sprite.name}) → Panel {i + 1}");
@@ -683,7 +535,7 @@ public class GameManager : MonoBehaviour
             {
                 Debug.LogWarning($"No matching UI panel found for {player.GetPlayerName()} with sprite {playerSprite.sprite.name}");
 
-                // FALLBACK: Weise dem ersten freien Panel zu
+                // Fallback: assign to first free panel
                 for (int i = 0; i < panels.Length; i++)
                 {
                     if (panels[i] != null && panels[i].GetAssignedPlayer() == null)
@@ -697,12 +549,12 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Initial-Update der sichtbaren Panels
+        // Initial display update for all visible panels
         foreach (var player in activePlayers)
         {
             UiManager.Instance?.UpdatePlayerUI(player);
         }
 
-        Debug.Log($"UI-Zuweisung: {activePlayers.Count} Spieler → UI-Panels nach Sprite zugewiesen");
+        Debug.Log($"UI Assignment complete: {activePlayers.Count} player(s) → panels assigned by sprite.");
     }
 }

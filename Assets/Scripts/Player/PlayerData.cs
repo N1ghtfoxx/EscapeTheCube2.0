@@ -2,10 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-
 /// <summary>
-/// Stores player selection data from StartHub
-/// Persists between scene loads using DontDestroyOnLoad
+/// Stores player selection data from StartHub.
+/// Persists between scene loads using DontDestroyOnLoad.
 /// </summary>
 public class PlayerData : MonoBehaviour
 {
@@ -30,12 +29,11 @@ public class PlayerData : MonoBehaviour
 
     #region Player Selection Data
 
-    [System.Serializable]
     public class SelectedPlayerInfo
     {
         public string playerName;
-        public int characterIndex; // 0-3 for 4 Chars
-        public CharacterData characterData; // reference to the chosen char data
+        public int characterIndex; // 0-3
+        public Sprite characterSprite; // sprite taken directly from the character button
     }
 
     private List<SelectedPlayerInfo> selectedPlayers = new List<SelectedPlayerInfo>();
@@ -45,68 +43,63 @@ public class PlayerData : MonoBehaviour
     #region Public Methods
 
     /// <summary>
-    /// Called from StartHub when a player makes their selection
+    /// Called from StartHub when a player confirms their selection.
     /// </summary>
-    public void SetPlayerSelection(int playerSlot, string name, int characterIndex, CharacterData characterData)
+    public void SetPlayerSelection(int playerSlot, string name, int characterIndex, Sprite characterSprite)
     {
-        // ensure list is large enough
         while (selectedPlayers.Count <= playerSlot)
-        {
             selectedPlayers.Add(null);
-        }
 
-        // create or update player info
         selectedPlayers[playerSlot] = new SelectedPlayerInfo
         {
             playerName = name,
             characterIndex = characterIndex,
-            characterData = characterData
+            characterSprite = characterSprite
         };
-        Debug.Log($"Player {playerSlot + 1} selection saved: {name}, Character {characterIndex} ({characterData.characterName})");
+
+        Debug.Log($"[PlayerData] Slot {playerSlot + 1} saved: {name}, Character index {characterIndex}");
     }
 
     /// <summary>
-    /// Returns all selected players
+    /// Returns all selected players (null entries filtered out).
     /// </summary>
     public List<SelectedPlayerInfo> GetAllPlayerSelections()
     {
-        // filter out null entries
         return selectedPlayers.Where(p => p != null).ToList();
     }
 
     /// <summary>
-    /// Returns specific player selection by slot
+    /// Returns the selection for a specific slot, or null.
     /// </summary>
     public SelectedPlayerInfo GetPlayerSelection(int playerSlot)
     {
         if (playerSlot < 0 || playerSlot >= selectedPlayers.Count)
             return null;
-
         return selectedPlayers[playerSlot];
     }
 
     /// <summary>
-    /// Checks if at least one player has made a selection
+    /// True if at least one player has a valid name and sprite selected.
     /// </summary>
     public bool HasSelection()
     {
         return selectedPlayers.Any(p => p != null &&
-            !string.IsNullOrEmpty(p.playerName) && 
-            p.characterData != null);
+            !string.IsNullOrEmpty(p.playerName) &&
+            p.characterSprite != null);
     }
 
     /// <summary>
-    /// Returns number of players who made selections
+    /// Number of fully configured players.
     /// </summary>
     public int GetPlayerCount()
     {
         return selectedPlayers.Count(p => p != null &&
-        !string.IsNullOrEmpty(p.playerName) && 
-        p.characterData != null);
+            !string.IsNullOrEmpty(p.playerName) &&
+            p.characterSprite != null);
     }
 
     /// <summary>
-    /// Clears the selection (useful for returning to main menu)
+    /// Clears all selections (e.g. when returning to main menu).
     /// </summary>
     public void ClearSelection()
     {
