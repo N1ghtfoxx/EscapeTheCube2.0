@@ -109,16 +109,19 @@ public class CardManager : MonoBehaviour
             case CardEffect.HintCard:
                 // HinweisKarte: +1 Hinweiskarte
                 Debug.Log($"{currPlayer.GetPlayerName()} received a hint card.");
+                currPlayer.AddHintCard();
                 break;
 
             case CardEffect.AccesCard:
                 // Zugangkarte: +1 Zugangskarte
                 Debug.Log($"{currPlayer.GetPlayerName()} received an access card.");
+                currPlayer.AddAccessCard();
                 break;
 
             case CardEffect.NextTurnMandatory:
                 // Energydrink: nächster Zug verpflichtend
                 Debug.Log($"{currPlayer.GetPlayerName()}'s next turn is mandatory.");
+                currPlayer.SetNextTurnMandatory(true);
                 break;
 
             case CardEffect.SecretPassage:

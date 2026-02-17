@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS escape_the_cube CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE escape_the_cube;
+
+CREATE TABLE IF NOT EXISTS players (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    playername VARCHAR(50) NOT NULL UNIQUE,
+    rounds_played INT DEFAULT 0,
+    wins INT DEFAULT 0,
+    losses INT DEFAULT 0,
+    playtime_seconds INT DEFAULT 0,
+    last_played TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

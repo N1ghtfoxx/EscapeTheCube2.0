@@ -15,7 +15,7 @@ MonoBehaviour:
   cardType: 0
   cardtext: Barista hat es eilig, verliert dabei die Zugangskarte zum Bistro und
     du krallst sie dir
-  cardEffect: +1 Hinweiskarte
+  cardEffect: +1 Zugangskarte
   hydration: 0
   suspendedTurns: 0
   cardEffectType: 2
