@@ -171,7 +171,11 @@ public class Player : MonoBehaviour
     /// </summary>
     protected virtual void OnHydrationChanged()
     {
-        // Empty by default - can be extended by other systems
+        if (hydration <= 0)
+        {
+            Debug.Log($"{GetPlayerName()} has no hydration left - eliminated!");
+            GameManager.Instance.EliminatePlayer(this);
+        }
     }
 
     #endregion

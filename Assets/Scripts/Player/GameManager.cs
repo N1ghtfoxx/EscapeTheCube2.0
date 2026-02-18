@@ -557,4 +557,58 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"UI Assignment complete: {activePlayers.Count} player(s) → panels assigned by sprite.");
     }
+
+    /// <summary>
+    /// eliminates player who has run out of hydration
+    /// removes them from the game, hides their UI panel and destroys their GameObject
+    /// </summary>
+    public void EliminatePlayer(Player player)
+    {
+        if (!players.Contains(player)) return;
+
+        Debug.Log($"{player.GetPlayerName()} is eliminated!");
+
+        // deactivate UI
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.SetEventText($"{player.GetPlayerName()} has been eliminated!");
+        }
+
+        PlayerUiPanel[] panels = FindObjectsByType<PlayerUiPanel>(FindObjectsSortMode.None);
+        foreach (var panel in panels)
+        {
+            if (panel.IsAssignedTo(player))
+            {
+                panel.Hide();
+                break;
+            }
+        }
+
+        // call NextPlayer() first, if it is this players turn
+        bool wasCurrentPlayer = players[currentPlayerIndex] == player;
+
+        players.Remove(player);
+
+        if (players.Count == 0)
+        {
+            Debug.Log("All players eliminated - Game Over!");
+            // TODO: Game Over Screen
+            return;
+        }
+
+        if (wasCurrentPlayer)
+        {
+            currentPlayerIndex = currentPlayerIndex % players.Count;
+            playerMovedThisTurn = false;
+            OnNextPlayer?.Invoke();
+            UpdateClickableFields();
+        }
+        else if (currentPlayerIndex >= players.Count)
+        {
+            currentPlayerIndex = 0;
+        }
+
+        // eliminate Player from scene
+        Destroy(player.gameObject);
+    }
 }
