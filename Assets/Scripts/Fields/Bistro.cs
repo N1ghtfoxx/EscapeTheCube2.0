@@ -32,5 +32,27 @@ public class Bistro : Field
         // Access card was already consumed in OnFieldClicked()
         // Just log the arrival for clarity
         Debug.Log($"{player.GetPlayerName()} has entered the Bistro.");
+
+        // start dice roll
+        DiceManager.Instance.OnDiceResult.AddListener(OnBistroDiceResult);
+        DiceManager.Instance.RollDice();
+    }
+
+    private void OnBistroDiceResult(int result)
+    {
+        // remove Listener instantly
+        DiceManager.Instance.OnDiceResult.RemoveListener(OnBistroDiceResult);
+
+        Player currentPlayer = GameManager.Instance.GetCurrentPlayer();
+
+        if (result == 2 || result == 6)
+        {
+            currentPlayer.AddHintCard();
+            Debug.Log($"{currentPlayer.GetPlayerName()} rolled {result} in Bistro - gained a hint card!");
+        }
+        else
+        {
+            Debug.Log($"{currentPlayer.GetPlayerName()} rolled {result} in Bistro - no reward.");
+        }
     }
 }

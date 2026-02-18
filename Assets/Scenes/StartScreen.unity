@@ -1056,7 +1056,7 @@ MonoBehaviour:
   - Red
   - Purple
   readyImageName: ReadyImage
-  mainSceneName: MainScene
+  mainSceneName: PlayerFixes2.0
 --- !u!4 &763346515
 Transform:
   m_ObjectHideFlags: 0

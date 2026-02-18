@@ -42,6 +42,15 @@ public class Player : MonoBehaviour
         // This must be first to prevent the player from clicking another field
         GameManager.Instance.DisableAllFields();
 
+        // FIX:
+        // Reset mandatory turn flag BEFORE SetPlayerMoved()
+        // so UpdateCardButtons() correctly reads nextTurnMandatory = false
+        if (nextTurnMandatory)
+        {
+            nextTurnMandatory = false;
+            Debug.Log($"{GetPlayerName()} completed mandatory turn (Energy Drink effect ended).");
+        }
+
         // Signal that player moved this turn
         GameManager.Instance.SetPlayerMoved(true);
 
@@ -58,13 +67,6 @@ public class Player : MonoBehaviour
         {
             // Power outage active - no hydration loss
             Debug.Log($"{GetPlayerName()} moved without hydration loss (Power Outage active).");
-        }
-
-        // Reset mandatory turn flag after movement (Energy Drink effect)
-        if (nextTurnMandatory)
-        {
-            nextTurnMandatory = false;
-            Debug.Log($"{GetPlayerName()} completed mandatory turn (Energy Drink effect ended).");
         }
 
         currentField = newField;
