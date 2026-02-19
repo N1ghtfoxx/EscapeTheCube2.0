@@ -127,7 +127,7 @@ public class CardButtonController : MonoBehaviour
     /// </summary>
     /// <param name="itemInteractable">Should Item card button be clickable?</param>
     /// <param name="actionInteractable">Should Action card button be clickable?</param>
-    private void SetCardButtonsInteractable(bool itemInteractable, bool actionInteractable)
+    public void SetCardButtonsInteractable(bool itemInteractable, bool actionInteractable)
     {
         if (itemCardButton != null)
         {

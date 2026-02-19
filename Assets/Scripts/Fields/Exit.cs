@@ -30,7 +30,6 @@ public class Exit : Field
         if (player.CanWin())
         {
             Debug.Log($"{player.GetPlayerName()} HAS WON THE GAME!");
-            /// TODO: win screen?
             HandlePlayerWin(player);
         }
         else
@@ -41,14 +40,42 @@ public class Exit : Field
 
     public void HandlePlayerWin(Player winner)
     {
+        int rounds = GameManager.Instance.GetRoundCount();
+        int playtime = GameManager.Instance.GetPlaytimeSeconds(); // once!
+
         // disable all fields
         Field[] allFields = FindObjectsByType<Field>(FindObjectsSortMode.None);
         foreach (Field field in allFields)
-        {
             field.SetClickable(false);
+
+        // track winner in DB
+        if (DBManager.Instance != null)
+        {
+            DBManager.Instance.UpdatePlayerStats(
+                winner.GetPlayerName(),
+                rounds,
+                GameResult.Win,
+                playtime
+            );
+        }
+
+        // track every other player as loss
+        foreach (Player player in GameManager.Instance.GetAllPlayers())
+        {
+            if (player == winner) continue;
+
+            if (DBManager.Instance != null)
+            {
+                DBManager.Instance.UpdatePlayerStats(
+                    player.GetPlayerName(),
+                    rounds,
+                    GameResult.Loss,
+                    playtime
+                );
+            }
         }
 
         Debug.Log($"Game Over! Winner: {winner.GetPlayerName()}");
-        /// TODO: show win screen, stop game, etc..
+        /// TODO: show win screen
     }
 }

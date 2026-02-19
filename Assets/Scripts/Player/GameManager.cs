@@ -51,6 +51,10 @@ public class GameManager : MonoBehaviour
     // Game Lock (prevents interaction during dice rolls, animations, etc.)
     private bool isGameLocked = false;
 
+    // statistics for DB
+    private int roundCount = 0;
+    private float gameStartTime;
+
     #endregion
 
     #region Unity Events
@@ -75,6 +79,11 @@ public class GameManager : MonoBehaviour
     {
         // Find all fields in the scene
         allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
+
+        // start playtime tracking
+        gameStartTime = Time.time;
+
+        roundCount = 1;
 
         // Spawn players from StartHub selection
         SpawnPlayersFromSelection();
@@ -204,6 +213,12 @@ public class GameManager : MonoBehaviour
     {
         // Switch to next player
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
+
+        if (currentPlayerIndex == 0)
+        {
+            roundCount++;
+            Debug.Log($"Round {roundCount} started.");
+        }
 
         // Reset movement flag for the NEW player BEFORE event
         // This ensures CardButtonController sees the correct state for the new player
@@ -427,6 +442,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OnCardDrawn()
     {
+        // termination if no player left
+        if (players.Count == 0) return;
+
         Debug.Log($"{GetCurrentPlayer().GetPlayerName()} drew a card - ending turn.");
         NextPlayer();
     }
@@ -460,10 +478,14 @@ public class GameManager : MonoBehaviour
 
         isGameLocked = false;
 
-        UpdateClickableFields();
-
-        // TODO: Handle dice result (e.g., spawn/move Alf)
-        // This is handled by your teammate's code
+        if (!playerMovedThisTurn)
+        {
+            UpdateClickableFields();
+        }
+        else
+        {
+            Debug.Log("Player already moved this turn - fields stay disabled after dice roll.");
+        }
     }
 
     /// <summary>
@@ -557,4 +579,93 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"UI Assignment complete: {activePlayers.Count} player(s) → panels assigned by sprite.");
     }
+
+    /// <summary>
+    /// eliminates player who has run out of hydration
+    /// removes them from the game, hides their UI panel and destroys their GameObject
+    /// </summary>
+    public void EliminatePlayer(Player player)
+    {
+        if (!players.Contains(player)) return;
+
+        Debug.Log($"{player.GetPlayerName()} is eliminated!");
+
+        // deactivate UI
+        if (UiManager.Instance != null)
+        {
+            UiManager.Instance.SetEventText($"{player.GetPlayerName()} has been eliminated!");
+        }
+
+        PlayerUiPanel[] panels = FindObjectsByType<PlayerUiPanel>(FindObjectsSortMode.None);
+        foreach (var panel in panels)
+        {
+            if (panel.IsAssignedTo(player))
+            {
+                panel.Hide();
+                break;
+            }
+        }
+
+        // BD-call for disqualified layers
+        if (DBManager.Instance != null)
+        {
+            DBManager.Instance.UpdatePlayerStats(
+                player.GetPlayerName(),
+                roundCount,
+                GameResult.Loss,
+                GetPlaytimeSeconds()
+            );
+        }
+
+        // call NextPlayer() first, if it is this players turn
+        bool wasCurrentPlayer = players[currentPlayerIndex] == player;
+
+        players.Remove(player);
+
+        if (players.Count == 0)
+        {
+            Debug.Log("All players eliminated - Game Over!");
+            Destroy(player.gameObject);
+
+            // deactivate all buttons
+            CardButtonController controller = FindFirstObjectByType<CardButtonController>();
+            if (controller != null)
+                controller.SetCardButtonsInteractable(false, false);
+
+            // TODO: Game Over Screen?
+            return;
+        }
+
+        if (wasCurrentPlayer)
+        {
+            currentPlayerIndex = currentPlayerIndex % players.Count;
+            playerMovedThisTurn = false;
+            OnNextPlayer?.Invoke();
+            UpdateClickableFields();
+        }
+        else if (currentPlayerIndex >= players.Count)
+        {
+            currentPlayerIndex = 0;
+        }
+
+        // eliminate Player from scene
+        Destroy(player.gameObject);
+    }
+
+    #region Database Helpers
+
+    /// <summary>
+    /// returns the number of rounds played so far
+    /// </summary>
+    public int GetRoundCount() => roundCount;
+
+    /// <summary>
+    /// returns the playtime in seconds since game start
+    /// </summary>
+    public int GetPlaytimeSeconds()
+    {
+        return Mathf.RoundToInt(Time.time - gameStartTime);
+    }
+
+    #endregion
 }
