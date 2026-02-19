@@ -40,21 +40,22 @@ public class Exit : Field
 
     public void HandlePlayerWin(Player winner)
     {
+        int rounds = GameManager.Instance.GetRoundCount();
+        int playtime = GameManager.Instance.GetPlaytimeSeconds(); // once!
+
         // disable all fields
         Field[] allFields = FindObjectsByType<Field>(FindObjectsSortMode.None);
         foreach (Field field in allFields)
-        {
             field.SetClickable(false);
-        }
 
         // track winner in DB
         if (DBManager.Instance != null)
         {
             DBManager.Instance.UpdatePlayerStats(
                 winner.GetPlayerName(),
-                GameManager.Instance.GetRoundCount(),
+                rounds,
                 GameResult.Win,
-                GameManager.Instance.GetPlaytimeSeconds()
+                playtime
             );
         }
 
@@ -67,13 +68,12 @@ public class Exit : Field
             {
                 DBManager.Instance.UpdatePlayerStats(
                     player.GetPlayerName(),
-                    GameManager.Instance.GetRoundCount(),
+                    rounds,
                     GameResult.Loss,
-                    GameManager.Instance.GetPlaytimeSeconds()
+                    playtime
                 );
             }
         }
-
 
         Debug.Log($"Game Over! Winner: {winner.GetPlayerName()}");
         /// TODO: show win screen

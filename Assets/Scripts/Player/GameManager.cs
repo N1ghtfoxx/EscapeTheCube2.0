@@ -83,6 +83,8 @@ public class GameManager : MonoBehaviour
         // start playtime tracking
         gameStartTime = Time.time;
 
+        roundCount = 1;
+
         // Spawn players from StartHub selection
         SpawnPlayersFromSelection();
 
@@ -440,6 +442,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OnCardDrawn()
     {
+        // termination if no player left
+        if (players.Count == 0) return;
+
         Debug.Log($"{GetCurrentPlayer().GetPlayerName()} drew a card - ending turn.");
         NextPlayer();
     }
@@ -473,10 +478,14 @@ public class GameManager : MonoBehaviour
 
         isGameLocked = false;
 
-        UpdateClickableFields();
-
-        // TODO: Handle dice result (e.g., spawn/move Alf)
-        // This is handled by your teammate's code
+        if (!playerMovedThisTurn)
+        {
+            UpdateClickableFields();
+        }
+        else
+        {
+            Debug.Log("Player already moved this turn - fields stay disabled after dice roll.");
+        }
     }
 
     /// <summary>
@@ -616,6 +625,13 @@ public class GameManager : MonoBehaviour
         if (players.Count == 0)
         {
             Debug.Log("All players eliminated - Game Over!");
+            Destroy(player.gameObject);
+
+            // deactivate all buttons
+            CardButtonController controller = FindFirstObjectByType<CardButtonController>();
+            if (controller != null)
+                controller.SetCardButtonsInteractable(false, false);
+
             // TODO: Game Over Screen?
             return;
         }
