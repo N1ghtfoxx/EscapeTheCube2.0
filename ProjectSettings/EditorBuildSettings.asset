@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/StartScreen.unity
     guid: ddd3c892d1c86254e84c527a24603ee5
   - enabled: 1
+    path: Assets/Scenes/BugFixing.unity
+    guid: f03a53aac5044c84396b32bdf7985849
+  - enabled: 0
     path: Assets/Scenes/MainScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 0

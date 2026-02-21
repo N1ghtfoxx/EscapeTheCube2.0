@@ -1,34 +1,20 @@
 using UnityEngine;
 
 /// <summary>
-/// Bistro field - requires an access card to enter
+/// Bistro field - always enterable.
+/// If the player has an access card, it is consumed and a dice roll is triggered:
+///   ? result 2 or 6: gain a hint card (bonus reward)
+/// Without an access card the player simply enters with no additional effect.
 /// </summary>
 public class Bistro : Field
 {
-    //// stores the lambda so we can remove it from the listener later
-    //private System.Action<int> _bistroDiceCallback;
-
-    // cache the arriving player so OnBistroDiceResult always rewards the correct player,
-    // even if GetCurrentPlayer() has already advanced to the next player by then
+    // Cache the arriving player so OnBistroDiceResult always rewards the correct
+    // player, even if GetCurrentPlayer() has already advanced by then.
     private Player _arrivingPlayer;
 
     protected override void OnFieldClicked()
     {
-        Player currentPlayer = GameManager.Instance.GetCurrentPlayer();
-
-        // Check if player has access card
-        if (!currentPlayer.HasAccessCard())
-        {
-            Debug.Log($"{currentPlayer.GetPlayerName()} needs an access card to enter the Bistro!");
-            return;
-        }
-
-        // CRITICAL: Consume access card BEFORE moving (before NextPlayer() is called)
-        // If we consume after base.OnFieldClicked(), the wrong player loses the card!
-        currentPlayer.ConsumeAccessCard();
-        Debug.Log($"{currentPlayer.GetPlayerName()} used an access card to enter the Bistro.");
-
-        // Allow entry - this calls MoveToField() which triggers NextPlayer()
+        // Bistro is always accessible - no access card required to enter
         base.OnFieldClicked();
     }
 
@@ -36,37 +22,39 @@ public class Bistro : Field
     {
         base.OnPlayerArrived(player);
 
-        // Access card was already consumed in OnFieldClicked()
-        // Just log the arrival for clarity
-        Debug.Log($"{player.GetPlayerName()} has entered the Bistro.");
+        if (player.HasAccessCard())
+        {
+            // Consume the access card and trigger bonus dice roll for a hint card
+            player.ConsumeAccessCard();
+            Debug.Log($"{player.GetPlayerName()} used an access card in the Bistro - rolling for a bonus hint card!");
 
-        // start dice roll
-        // cache player NOW before turn potentially advances
-        _arrivingPlayer = player;
-        DiceManager.Instance.OnDiceResult.AddListener(OnBistroDiceResult);
-        DiceManager.Instance.RollDice();
+            _arrivingPlayer = player;
+            DiceManager.Instance.OnDiceResult.AddListener(OnBistroDiceResult);
+            DiceManager.Instance.RollDice();
+        }
+        else
+        {
+            // No access card - just enter, no bonus roll
+            Debug.Log($"{player.GetPlayerName()} entered the Bistro (no access card - no bonus roll).");
+            GameManager.Instance.SetPlayerMoved(true);
+        }
     }
 
     private void OnBistroDiceResult(int result)
     {
-        // remove Listener instantly using stored reference
         DiceManager.Instance.OnDiceResult.RemoveListener(OnBistroDiceResult);
 
-        //Player currentPlayer = GameManager.Instance.GetCurrentPlayer();
-
-        // use cached player instead of GetCurrentPlayer()
-        // GetCurrentPlayer() could already point to the next player at this point
         Player player = _arrivingPlayer;
         _arrivingPlayer = null;
 
         if (result == 2 || result == 6)
         {
             player.AddHintCard();
-            Debug.Log($"{player.GetPlayerName()} rolled {result} in Bistro - gained a hint card!");
+            Debug.Log($"{player.GetPlayerName()} rolled {result} in Bistro - gained a bonus hint card!");
         }
         else
         {
-            Debug.Log($"{player.GetPlayerName()} rolled {result} in Bistro - no reward.");
+            Debug.Log($"{player.GetPlayerName()} rolled {result} in Bistro - no bonus hint card.");
         }
 
         GameManager.Instance.SetPlayerMoved(true);

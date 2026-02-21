@@ -24,15 +24,20 @@ public class Player : MonoBehaviour
     private bool nextTurnMandatory = false; // Energy Drink effect
     private bool hasVisitedWC = false;
 
+    [Header("Player Layout Settings")]
+    [Tooltip("Abstand zwischen Spielern auf demselben Feld")]
+    [SerializeField] private float playerSpacing = 0.22f;
+
     #endregion
 
     #region Movement
 
     /// <summary>
-    /// Moves player to a new field
-    /// Handles hydration loss (unless Power Outage is active)
-    /// Resets Energy Drink mandatory turn flag if active
-    /// Triggers field arrival events
+    /// Moves player to a new field.
+    /// Handles hydration loss (unless Power Outage is active).
+    /// Resets Energy Drink mandatory turn flag if active.
+    /// Triggers field arrival events.
+    /// Repositions ALL players on the target field in a clean row.
     /// NOTE: Does NOT end the turn! Player can still draw cards after moving.
     /// Turn ends when player draws a card via CardDeckButtonHandler -> GameManager.OnCardDrawn()
     /// </summary>
@@ -69,37 +74,90 @@ public class Player : MonoBehaviour
             Debug.Log($"{GetPlayerName()} moved without hydration loss (Power Outage active).");
         }
 
+        // Update currentField and reposition everyone on both the old and new field
+        Field oldField = currentField;
         currentField = newField;
 
-        // Calculate position with offset if multiple players on same field
-        Vector3 targetPosition = newField.transform.position;
+        // Reposition players on the OLD field (one fewer player now)
+        if (oldField != null)
+            RepositionPlayersOnField(oldField);
 
-        // Get all players on this field
-        List<Player> playersOnField = GameManager.Instance.GetAllPlayers()
-            .Where(p => p.GetCurrentField() == newField && p != this)
-            .ToList();
-
-        if (playersOnField.Count > 0)
-        {
-            // There are other players here - add offset in a circle
-            int totalPlayers = playersOnField.Count + 1; // +1 for this player
-            int myIndex = playersOnField.Count; // This player is the newest arrival
-
-            float angle = (360f / totalPlayers) * myIndex;
-            float radius = 0.15f; // Kleinerer Abstand - bleiben auf dem Field
-            float offsetX = Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
-            float offsetY = Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
-
-            targetPosition += new Vector3(offsetX, offsetY, 0);
-        }
-
-        transform.position = targetPosition;
+        // Reposition players on the NEW field (includes this player)
+        RepositionPlayersOnField(newField);
 
         // Notify the field that player arrived
         newField.OnPlayerArrived(this);
 
         // DO NOT call NextPlayer() here!
         // Turn ends when player draws a card (CardDeckButtonHandler -> GameManager.OnCardDrawn)
+    }
+
+    /// <summary>
+    /// Repositions all players currently on the given field in a clean, centered row.
+    /// Horizontal by default — vertical if the field has IsVerticalLayout() == true (e.g. Terrasse).
+    /// Called whenever a player arrives at or leaves a field so the layout stays clean.
+    ///
+    /// SAFE during initialization: if GameManager isn't ready yet, only this player
+    /// is positioned at the field center (correct for single-player spawn scenarios).
+    /// </summary>
+    private void RepositionPlayersOnField(Field field)
+    {
+        if (field == null) return;
+
+        // Safe fallback during initialization: GameManager not ready yet
+        // → just place this player exactly at the field center and return
+        if (GameManager.Instance == null)
+        {
+            transform.position = field.transform.position;
+            Debug.Log($"[Player] RepositionPlayersOnField: GameManager not ready, placing {GetPlayerName()} at field center.");
+            return;
+        }
+
+        // Gather all players on this field
+        List<Player> allPlayers = GameManager.Instance.GetAllPlayers();
+        if (allPlayers == null || allPlayers.Count == 0)
+        {
+            // GameManager exists but hasn't registered players yet (e.g. mid-spawn)
+            transform.position = field.transform.position;
+            Debug.Log($"[Player] RepositionPlayersOnField: No players registered yet, placing {GetPlayerName()} at field center.");
+            return;
+        }
+
+        List<Player> playersOnField = allPlayers
+            .Where(p => p != null && p.GetCurrentField() == field)
+            .ToList();
+
+        int count = playersOnField.Count;
+        if (count == 0) return;
+
+        bool vertical = field.IsVerticalLayout();
+        Vector3 center = field.transform.position;
+
+        // Centered layout: offset starts at -(totalSpan / 2) so the group is
+        // symmetrically centered on the field's transform position
+        float totalSpan = (count - 1) * playerSpacing;
+        float startOffset = -totalSpan / 2f;
+
+        for (int i = 0; i < count; i++)
+        {
+            float offset = startOffset + i * playerSpacing;
+            Vector3 pos = center;
+
+            if (vertical)
+                pos.y += offset;  // Terrasse: stack top-to-bottom
+            else
+                pos.x += offset;  // Default: stack left-to-right
+
+            playersOnField[i].transform.position = pos;
+
+            // Give each player a unique sortingOrder so nobody disappears
+            // behind another. Higher index = rendered on top.
+            SpriteRenderer sr = playersOnField[i].GetComponent<SpriteRenderer>();
+            if (sr != null)
+                sr.sortingOrder = i;
+        }
+
+        Debug.Log($"[Player] Repositioned {count} player(s) on field '{field.name}' ({(vertical ? "vertical" : "horizontal")}).");
     }
 
     /// <summary>
@@ -120,12 +178,20 @@ public class Player : MonoBehaviour
     /// <param name="moveToPosition">If true, moves player to field position. If false, keeps current position.</param>
     public void SetCurrentField(Field field, bool moveToPosition = true)
     {
+        Field oldField = currentField;
         currentField = field;
 
         // Move player to the field's position (unless explicitly disabled)
         if (field != null && moveToPosition)
         {
             transform.position = field.transform.position;
+
+            // Reposition everyone on the old field (one fewer player now)
+            if (oldField != null)
+                RepositionPlayersOnField(oldField);
+
+            // Reposition everyone on the new field
+            RepositionPlayersOnField(field);
         }
     }
 
@@ -397,7 +463,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private Field FindNearestTheke()
     {
-        // get all fields in teh game via GameManager
+        // get all fields in the game via GameManager
         List<Field> allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
 
         Field nearestTheke = null;
@@ -405,7 +471,7 @@ public class Player : MonoBehaviour
 
         foreach (Field field in allFields)
         {
-            // check if this fiel is a theke
+            // check if this field is a theke
             if (field is ITheke)
             {
                 // calculate distance from player's current position to this field

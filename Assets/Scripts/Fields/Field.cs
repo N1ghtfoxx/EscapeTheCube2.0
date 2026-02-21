@@ -9,13 +9,24 @@ public class Field : MonoBehaviour
 
     protected bool isClickable = false;
 
+    [Header("Player Layout")]
+    [Tooltip("Wenn aktiv, werden Spieler auf diesem Feld VERTIKAL angeordnet (z.B. Terrasse). Standard ist horizontal.")]
+    [SerializeField] private bool verticalPlayerLayout = false;
+
+    /// <summary>
+    /// Returns true if players on this field should be arranged vertically (Y-axis)
+    /// instead of the default horizontal (X-axis) arrangement.
+    /// Enable this in the Inspector for fields like Terrasse.
+    /// </summary>
+    public bool IsVerticalLayout() => verticalPlayerLayout;
+
     protected virtual void Update()
     {
-       // check if mouse button was pressed this frame
-       if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-       {
+        // check if mouse button was pressed this frame
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
             CheckIfClicked();
-       }
+        }
     }
 
     // checks if mouse is over this field when clicked
@@ -57,7 +68,7 @@ public class Field : MonoBehaviour
     // adds a neighbour to this station
     public void AddNeighbour(Field neighbour)
     {
-        if(!neighbours.Contains(neighbour))
+        if (!neighbours.Contains(neighbour))
         {
             neighbours.Add(neighbour);
         }

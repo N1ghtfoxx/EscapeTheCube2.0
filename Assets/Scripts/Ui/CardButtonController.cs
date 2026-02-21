@@ -3,11 +3,6 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Controls the interactability of Item and Action card deck buttons
-/// Rules:
-/// - Player moved this turn: Both Item and Action cards available
-/// - Player did NOT move: Only Action cards available
-/// - Energy Drink effect active: Must move first (no cards available)
-/// - During dice rolls: No cards available
 /// </summary>
 public class CardButtonController : MonoBehaviour
 {
@@ -17,6 +12,10 @@ public class CardButtonController : MonoBehaviour
 
     [Tooltip("Drag your Action Card Button GameObject here")]
     [SerializeField] private Button actionCardButton;
+
+    // hard lock: true while ANY dice roll is in progress
+    // prevents OnPlayerChanged or external calls from re-enabling buttons
+    private bool isDiceRolling = false;
 
     private void Start()
     {
@@ -54,42 +53,56 @@ public class CardButtonController : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when dice start rolling - disable all card buttons
+    /// Called when dice start rolling - sets hard lock and disables all card buttons
     /// </summary>
     private void OnDiceRolling()
     {
+        isDiceRolling = true;
         SetCardButtonsInteractable(false, false);
         Debug.Log("[CardButtonController] Dice rolling - card buttons disabled");
     }
 
     /// <summary>
-    /// Called when dice finish rolling - update button states based on game rules
+    /// Called when dice finish rolling - releases hard lock, then re-evaluates correct state
     /// </summary>
     private void OnDiceResult(int result)
     {
+        isDiceRolling = false;
         UpdateCardButtonStates();
         Debug.Log("[CardButtonController] Dice result received - updating card button states");
     }
 
     /// <summary>
-    /// Called when turn switches to next player - reset button states
+    /// Called when turn switches to next player 
+    /// does nothing while dice are rolling 
+    /// without this guard, a NextPlayer() call triggered mid-roll would re-enable action cards 
     /// </summary>
     private void OnPlayerChanged()
     {
+        if (isDiceRolling)
+        {
+            Debug.Log("[CardButtonController] Player changed DURING dice roll - skipping state update (hard lock active)");
+            return;
+        }
+
         UpdateCardButtonStates();
         Debug.Log("[CardButtonController] Player changed - resetting card button states");
     }
 
     /// <summary>
     /// Updates card button interactability based on current game state
-    /// RULES:
-    /// 1. If player has Energy Drink effect (mandatory movement): NO cards available
-    /// 2. If player moved this turn: BOTH Item and Action cards available
-    /// 3. If player did NOT move: ONLY Action cards available
-    /// 4. During dice rolls: NO cards available (handled by OnDiceRolling)
+    /// Immediately forces disabled state if dice are rolling
     /// </summary>
     public void UpdateCardButtonStates()
     {
+        // hard lock while dice are rolling - no other code path can override this
+        if (isDiceRolling)
+        {
+            SetCardButtonsInteractable(false, false);
+            Debug.Log("[CardButtonController] UpdateCardButtonStates called during dice roll - hard lock enforced");
+            return;
+        }
+
         if (GameManager.Instance == null)
         {
             Debug.LogWarning("[CardButtonController] GameManager.Instance is null!");

@@ -124,17 +124,9 @@ public class GameManager : MonoBehaviour
         {
             var selection = allSelections[i];
 
-            // Calculate spawn position – spread players in a small circle so they don't overlap
+            // Spawn at field center – Player.RepositionPlayersOnField() handles
+            // the final layout (horizontal row, centered) once all players are registered.
             Vector3 spawnPosition = startField != null ? startField.transform.position : Vector3.zero;
-
-            if (allSelections.Count > 1)
-            {
-                float angle = (360f / allSelections.Count) * i;
-                float radius = 0.15f;
-                float offsetX = Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
-                float offsetY = Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
-                spawnPosition += new Vector3(offsetX, offsetY, 0);
-            }
 
             // Spawn the player prefab
             GameObject playerObject = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
@@ -167,12 +159,14 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Assign all players to the start field without moving them (keep circular offset)
+        // All players are now registered – assign them to the start field WITH repositioning.
+        // Player.SetCurrentField(moveToPosition: true) calls RepositionPlayersOnField()
+        // which centers the full group in a horizontal row on the field.
         if (startField != null)
         {
             foreach (var player in players)
             {
-                player.SetCurrentField(startField, moveToPosition: false);
+                player.SetCurrentField(startField, moveToPosition: true);
             }
         }
     }
