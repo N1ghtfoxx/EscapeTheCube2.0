@@ -636,7 +636,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1489,6 +1489,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1659575736}
     - target: {fileID: 5721108036689792269, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
+      propertyPath: verticalPlayerLayout
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5721108036689792269, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
       propertyPath: neighbours.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -1633,6 +1637,7 @@ MonoBehaviour:
   neighbours:
   - {fileID: 1673482011}
   - {fileID: 1239730419}
+  verticalPlayerLayout: 0
 --- !u!1 &691515122 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4036334028784230958, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -1653,6 +1658,7 @@ MonoBehaviour:
   neighbours:
   - {fileID: 1239730419}
   - {fileID: 643805397}
+  verticalPlayerLayout: 0
 --- !u!1 &691515124 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5500128524081199362, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -1672,6 +1678,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   neighbours:
   - {fileID: 1659575736}
+  verticalPlayerLayout: 0
 --- !u!1 &699822919
 GameObject:
   m_ObjectHideFlags: 0
@@ -2094,7 +2101,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2552,6 +2559,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   neighbours:
   - {fileID: 981044567}
+  verticalPlayerLayout: 0
 --- !u!1 &1284470277
 GameObject:
   m_ObjectHideFlags: 0
@@ -2881,7 +2889,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_SizeDelta.y
@@ -3098,6 +3106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   neighbours:
   - {fileID: 1585457741}
+  verticalPlayerLayout: 0
 --- !u!1 &1424996744
 GameObject:
   m_ObjectHideFlags: 0
@@ -4296,7 +4305,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 6437798778471662853, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
       propertyPath: m_SizeDelta.y
