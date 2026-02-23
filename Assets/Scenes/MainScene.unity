@@ -4106,6 +4106,8 @@ MonoBehaviour:
   - {fileID: 987384113}
   fields: {fileID: 2054043579}
   theFields: []
+  addListeners: 1
+  addHydrationEachRound: 1
 --- !u!4 &1764134901
 Transform:
   m_ObjectHideFlags: 0

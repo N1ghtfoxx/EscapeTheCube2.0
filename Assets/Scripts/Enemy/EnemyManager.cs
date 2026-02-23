@@ -15,6 +15,10 @@ public class EnemyManager : MonoBehaviour
 
     private EnemyType enemyToTeleport;
     private int blockingAlfCounter = 0;
+    
+    [Header("Debug")]
+    [SerializeField] private bool addListeners = false;
+    [SerializeField] private bool addHydrationEachRound = false;
 
     private void Awake()
     {
@@ -57,6 +61,10 @@ public class EnemyManager : MonoBehaviour
         enemies[0].CurrentField = theFields[7];
         
         GameManager.Instance.OnNextPlayer.AddListener(OnPlayerChange);
+
+        if (!addListeners)
+            return;
+        GameManager.Instance.OnNextPlayer.AddListener(AddPlayerHydration);
         
     }
 
@@ -136,7 +144,10 @@ public class EnemyManager : MonoBehaviour
             {
                 Debug.Log("Player " + player.name + " is on the same field as " + et);
                 player.MoveToField(theFields[0]);
-                player.RemoveHintCard(player.GetHintCards());
+                if (et == EnemyType.Alf)
+                    player.RemoveHintCard(player.GetHintCards());
+                else
+                    player.ConsumeAccessCard(player.GetAccessCards());
             }
             else
             {
@@ -155,6 +166,13 @@ public class EnemyManager : MonoBehaviour
     {
         enemies[0].IsBlocked = false;
         Debug.Log("Unblocked Alf");
+    }
+
+    private void AddPlayerHydration()
+    {
+        if (!addHydrationEachRound)
+            return;
+        GameManager.Instance.GetCurrentPlayer().ChangeHydration(2);
     }
     
 }

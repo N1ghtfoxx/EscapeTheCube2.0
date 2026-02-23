@@ -33,5 +33,11 @@ public class Enemy : MonoBehaviour
         get => isBlocked;
         set => isBlocked = value;
     }
-    
+
+    [ContextMenu("Debug/SetToPlayersField")]
+    public void SetToPlayersField()
+    {
+        CurrentField = GameManager.Instance.GetCurrentPlayer().GetCurrentField();
+    }
+
 }
