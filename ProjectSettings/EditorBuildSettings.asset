@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/PlayerFixes2.0.unity
     guid: fa834365f5cd3304da01d29bfeb1e891
   - enabled: 1
-    path: Assets/Scenes/DiceAreaFix.unity
+    path: Assets/Scenes/Fixes.unity
     guid: 69af19a5e5630254ca2708b3c7090506
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

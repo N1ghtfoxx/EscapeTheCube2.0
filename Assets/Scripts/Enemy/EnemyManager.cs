@@ -174,6 +174,12 @@ public class EnemyManager : MonoBehaviour
             return;
         GameManager.Instance.GetCurrentPlayer().ChangeHydration(2);
     }
+
+    [ContextMenu("Debug/AddPlayerHintCards")]
+    private void AddPlayerHintCards()
+    {
+        GameManager.Instance.GetCurrentPlayer().AddHintCard(3);
+    }
     
 }
 
