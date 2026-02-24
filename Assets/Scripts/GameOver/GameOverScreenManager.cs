@@ -62,7 +62,7 @@ public class GameOverScreenManager : MonoBehaviour
 
      public void ToPlayerSelection()
      {
-         SceneManager.LoadScene("StartScreen");
+         SceneManager.LoadScene("CharacterSelection");
      }
 
 }
