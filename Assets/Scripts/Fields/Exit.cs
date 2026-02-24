@@ -1,4 +1,6 @@
+//using NUnit.Framework;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Exit : Field
 {
@@ -41,7 +43,7 @@ public class Exit : Field
     public void HandlePlayerWin(Player winner)
     {
         int rounds = GameManager.Instance.GetRoundCount();
-        int playtime = GameManager.Instance.GetPlaytimeSeconds(); // once!
+        int playtime = GameManager.Instance.GetPlaytimeSeconds();
 
         // disable all fields
         Field[] allFields = FindObjectsByType<Field>(FindObjectsSortMode.None);
@@ -76,6 +78,16 @@ public class Exit : Field
         }
 
         Debug.Log($"Game Over! Winner: {winner.GetPlayerName()}");
-        /// TODO: show win screen
+
+        // Show Game Over screen with winner and ALL players (including eliminated ones)
+        if (GameOverScreenManager.Instance != null)
+        {
+            List<PlayerStats> allPlayerStats = GameManager.Instance.GetAllPlayersStats(winner);
+            GameOverScreenManager.Instance.ShowEndScreen(winner, allPlayerStats);
+        }
+        else
+        {
+            Debug.LogError("GameOverScreenManager.Instance is null!");
+        }
     }
 }

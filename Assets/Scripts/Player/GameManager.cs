@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     #region Private Fields
 
     private List<Player> players = new List<Player>(); // Now dynamic, populated at runtime
+    private List<PlayerStats> allEliminatedPlayers = new List<PlayerStats>(); // all eliminated players with stats 
     private List<Field> allFields = new List<Field>();
     private int currentPlayerIndex = 0;
 
@@ -600,7 +601,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // BD-call for disqualified layers
+        // DB-call for disqualified players
         if (DBManager.Instance != null)
         {
             DBManager.Instance.UpdatePlayerStats(
@@ -610,6 +611,16 @@ public class GameManager : MonoBehaviour
                 GetPlaytimeSeconds()
             );
         }
+
+        // NEU: Stats für diesen Spieler speichern, BEVOR er entfernt wird
+        PlayerStats eliminatedPlayerStats = new PlayerStats
+        {
+            PlayerName = player.GetPlayerName(),
+            Result = GameResult.Loss,
+            Rounds = roundCount,
+            PlaytimeSeconds = GetPlaytimeSeconds()
+        };
+        allEliminatedPlayers.Add(eliminatedPlayerStats);
 
         // call NextPlayer() first, if it is this players turn
         bool wasCurrentPlayer = players[currentPlayerIndex] == player;
@@ -626,7 +637,22 @@ public class GameManager : MonoBehaviour
             if (controller != null)
                 controller.SetCardButtonsInteractable(false, false);
 
-            // TODO: Game Over Screen?
+            // NEU: ALLE Spieler Stats kombinieren (ausgeschiedene + aktuell letzter)
+            List<PlayerStats> allFinalStats = new List<PlayerStats>();
+
+            // 1. Alle bereits ausgeschiedenen Spieler hinzufügen
+            allFinalStats.AddRange(allEliminatedPlayers);
+
+            // 2. Der letzte Spieler (der gerade jetzt ausscheidet) ist noch nicht in allEliminatedPlayers?
+            // Doch, wir haben ihn ja oben schon hinzugefügt! Also kein doppelter Eintrag nötig.
+
+            Debug.Log($"GameOver - Total players tracked: {allFinalStats.Count}");
+
+            // Show Game Over screen with all players
+            if (GameOverScreenManager.Instance != null)
+            {
+                GameOverScreenManager.Instance.ShowEndScreen(null, allFinalStats);
+            }
             return;
         }
 
@@ -646,12 +672,37 @@ public class GameManager : MonoBehaviour
         Destroy(player.gameObject);
     }
 
-    #region Database Helpers
+    // NEUE HILFSMETHODE für den Gewinn-Fall
+    public List<PlayerStats> GetAllPlayersStats(Player winner = null)
+    {
+        List<PlayerStats> allStats = new List<PlayerStats>();
 
-    /// <summary>
-    /// returns the number of rounds played so far
-    /// </summary>
-    public int GetRoundCount() => roundCount;
+        // 1. Alle ausgeschiedenen Spieler (Loss)
+        allStats.AddRange(allEliminatedPlayers);
+
+        // 2. Alle aktuell noch lebenden Spieler
+        foreach (Player p in players)
+        {
+            GameResult result = (p == winner) ? GameResult.Win : GameResult.Loss;
+
+            allStats.Add(new PlayerStats
+            {
+                PlayerName = p.GetPlayerName(),
+                Result = result,
+                Rounds = roundCount,
+                PlaytimeSeconds = GetPlaytimeSeconds()
+            });
+        }
+
+        return allStats;
+    }
+
+#region Database Helpers
+
+/// <summary>
+/// returns the number of rounds played so far
+/// </summary>
+public int GetRoundCount() => roundCount;
 
     /// <summary>
     /// returns the playtime in seconds since game start
@@ -662,4 +713,5 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
 }
