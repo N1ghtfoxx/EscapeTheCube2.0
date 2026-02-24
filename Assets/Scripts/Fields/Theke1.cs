@@ -1,8 +1,10 @@
+// made by Naomi in collaboration with Claude Ai 
+
 using UnityEngine;
 
 /// <summary>
-/// Theke 1 field - Safe space where Alf cannot harm players
-/// Implements ITheke to be found by Secret Passage card
+/// Theke 1 — safe zone field where Alf cannot harm players
+/// Implements ITheke so the Secret Passage card can locate it via the marker interface
 /// </summary>
 public class Theke1 : Field, ITheke
 {

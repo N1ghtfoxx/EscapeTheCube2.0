@@ -1,43 +1,63 @@
+// made by Naomi in collaboration with Claude Ai
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
+/// <summary>
+/// Base class for all board fields in the game
+/// Handles click detection, neighbour management, and player arrival callbacks
+/// Inherit from this class and override OnFieldClicked() / OnPlayerArrived() for custom field behaviour
+/// </summary>
 public class Field : MonoBehaviour
 {
-    // list of neighboring fields that players can move to
+    // -------------------------------------------------------------------------
+    // Inspector
+    // -------------------------------------------------------------------------
+
+    // Neighbouring fields the current player can move to from this field
     [SerializeField] protected List<Field> neighbours = new List<Field>();
 
-    protected bool isClickable = false;
-
     [Header("Player Layout")]
-    [Tooltip("Wenn aktiv, werden Spieler auf diesem Feld VERTIKAL angeordnet (z.B. Terrasse). Standard ist horizontal.")]
+    [Tooltip("When enabled, players standing on this field are arranged VERTICALLY")]
     [SerializeField] private bool verticalPlayerLayout = false;
 
-    /// <summary>
-    /// Returns true if players on this field should be arranged vertically (Y-axis)
-    /// instead of the default horizontal (X-axis) arrangement.
-    /// Enable this in the Inspector for fields like Terrasse.
-    /// </summary>
-    public bool IsVerticalLayout() => verticalPlayerLayout;
+    // -------------------------------------------------------------------------
+    // State
+    // -------------------------------------------------------------------------
+
+    // Whether this field currently accepts mouse clicks
+    protected bool isClickable = false;
+
+    // -------------------------------------------------------------------------
+    // Unity Lifecycle
+    // -------------------------------------------------------------------------
 
     protected virtual void Update()
     {
-        // check if mouse button was pressed this frame
+        // Poll for a left-mouse-button press each frame
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             CheckIfClicked();
         }
     }
 
-    // checks if mouse is over this field when clicked
+    // -------------------------------------------------------------------------
+    // Click Detection
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Tests whether the current mouse position overlaps this field's collider
+    /// Fires OnFieldClicked() if the field is clickable and the cursor is over it
+    /// </summary>
     private void CheckIfClicked()
     {
         if (!isClickable) return;
 
-        // get mouse position in world space
+        // Convert screen-space mouse position to world space
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-        // check if mouse is over this station's collider
+        // Test against the field's 2D collider
         Collider2D hitCollider = Physics2D.OverlapPoint(mousePosition);
 
         if (hitCollider != null && hitCollider.gameObject == gameObject)
@@ -46,26 +66,49 @@ public class Field : MonoBehaviour
         }
     }
 
-    // sets wether this field can be clicked
-    public void SetClickable(bool clickable)
-    {
-        isClickable = clickable;
-    }
+    // -------------------------------------------------------------------------
+    // Overrideable Callbacks
+    // -------------------------------------------------------------------------
 
-    // handles what happens when this field is clicked
+    /// <summary>
+    /// Called when the player clicks this field
+    /// Default behaviour: moves the current player here
+    /// Override in subclasses to add entry conditions (e.g. Exit, Bistro)
+    /// </summary>
     protected virtual void OnFieldClicked()
     {
         Player currentPlayer = GameManager.Instance.GetCurrentPlayer();
         currentPlayer.MoveToField(this);
     }
 
-    // returns all neighboring fields
+    /// <summary>
+    /// Called when a player finishes moving onto this field
+    /// Override in subclasses to apply field-specific effects
+    /// </summary>
+    public virtual void OnPlayerArrived(Player player)
+    {
+        // No default behaviour — child classes override as needed
+    }
+
+    // -------------------------------------------------------------------------
+    // Public API
+    // -------------------------------------------------------------------------
+
+    // Enables or disables click detection for this field
+    public void SetClickable(bool clickable)
+    {
+        isClickable = clickable;
+    }
+
+    // Returns all fields directly reachable from this one
     public List<Field> GetNeighbours()
     {
         return neighbours;
     }
 
-    // adds a neighbour to this station
+    /// <summary>
+    /// Registers a new neighbour if it is not already in the list
+    /// </summary>
     public void AddNeighbour(Field neighbour)
     {
         if (!neighbours.Contains(neighbour))
@@ -74,10 +117,9 @@ public class Field : MonoBehaviour
         }
     }
 
-    // called when a player arrives at this field
-    // - can be overridden by inherited classes
-    public virtual void OnPlayerArrived(Player player)
-    {
-        // empty by default - child classes can override this
-    }
+    /// <summary>
+    /// Returns true if players on this field should be stacked vertically
+    /// Checked by Player.RepositionPlayersOnField() during layout
+    /// </summary>
+    public bool IsVerticalLayout() => verticalPlayerLayout;
 }

@@ -1,20 +1,30 @@
+// made by Naomi in collaboration with Claude Ai
+
 using UnityEngine;
 
 /// <summary>
-/// Bistro field - always enterable.
-/// If the player has an access card, it is consumed and a dice roll is triggered:
-///   ? result 2 or 6: gain a hint card (bonus reward)
-/// Without an access card the player simply enters with no additional effect.
+/// Bistro field — always accessible, no entry conditions
+///
+/// Behaviour on arrival:
+///   - WITH access card: card is consumed and a bonus dice roll is triggered
+///       -> Roll 2 or 6: player gains one hint card
+///       -> Any other result: no additional reward
+///   - WITHOUT access card: player simply enters; no bonus roll
 /// </summary>
 public class Bistro : Field
 {
-    // Cache the arriving player so OnBistroDiceResult always rewards the correct
-    // player, even if GetCurrentPlayer() has already advanced by then.
+    // Cached reference to the player who just arrived
+    // Ensures OnBistroDiceResult always rewards the correct player,
+    // even if GetCurrentPlayer() has already advanced by the time the result fires
     private Player _arrivingPlayer;
+
+    // -------------------------------------------------------------------------
+    // Field Callbacks
+    // -------------------------------------------------------------------------
 
     protected override void OnFieldClicked()
     {
-        // Bistro is always accessible - no access card required to enter
+        // Bistro is always enterable — no guard condition needed
         base.OnFieldClicked();
     }
 
@@ -24,9 +34,9 @@ public class Bistro : Field
 
         if (player.HasAccessCard())
         {
-            // Consume the access card and trigger bonus dice roll for a hint card
+            // Consume the access card and kick off the bonus roll
             player.ConsumeAccessCard();
-            Debug.Log($"{player.GetPlayerName()} used an access card in the Bistro - rolling for a bonus hint card!");
+            Debug.Log($"{player.GetPlayerName()} used an access card in the Bistro – rolling for a bonus hint card!");
 
             _arrivingPlayer = player;
             DiceManager.Instance.OnDiceResult.AddListener(OnBistroDiceResult);
@@ -34,14 +44,23 @@ public class Bistro : Field
         }
         else
         {
-            // No access card - just enter, no bonus roll
-            Debug.Log($"{player.GetPlayerName()} entered the Bistro (no access card - no bonus roll).");
+            // No access card — just enter with no bonus effect
+            Debug.Log($"{player.GetPlayerName()} entered the Bistro (no access card – no bonus roll).");
             GameManager.Instance.SetPlayerMoved(true);
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Dice Callback
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Receives the bonus dice result after an access-card entry
+    /// Awards a hint card on a roll of 2 or 6, then marks the player as moved
+    /// </summary>
     private void OnBistroDiceResult(int result)
     {
+        // Unsubscribe immediately — this is a one-shot listener
         DiceManager.Instance.OnDiceResult.RemoveListener(OnBistroDiceResult);
 
         Player player = _arrivingPlayer;
@@ -50,11 +69,11 @@ public class Bistro : Field
         if (result == 2 || result == 6)
         {
             player.AddHintCard();
-            Debug.Log($"{player.GetPlayerName()} rolled {result} in Bistro - gained a bonus hint card!");
+            Debug.Log($"{player.GetPlayerName()} rolled {result} in Bistro – gained a bonus hint card!");
         }
         else
         {
-            Debug.Log($"{player.GetPlayerName()} rolled {result} in Bistro - no bonus hint card.");
+            Debug.Log($"{player.GetPlayerName()} rolled {result} in Bistro – no bonus hint card.");
         }
 
         GameManager.Instance.SetPlayerMoved(true);

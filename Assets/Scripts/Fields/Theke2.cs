@@ -1,12 +1,15 @@
+// made by Naomi in collaboration with Claude Ai
+
 using UnityEngine;
 
 /// <summary>
-/// Theke 2 field - Regular counter field
-/// Implements ITheke to be found by Secret Passage card
-/// Note: Unlike Theke1, this has no special Alf protection
+/// Theke 2 — standard counter field with no special rules
+/// Implements ITheke so the Secret Passage card can locate it via the marker interface
+///
+/// Note: Unlike Theke1, this field offers no protection from Alf
+/// Override OnPlayerArrived() here if field-specific behaviour is added later
 /// </summary>
 public class Theke2 : Field, ITheke
 {
-    // No special behavior - just a regular field that can be found by Secret Passage
-    // Override OnPlayerArrived if needed in the future
+    // No special behaviour — plain ITheke marker implementation.
 }

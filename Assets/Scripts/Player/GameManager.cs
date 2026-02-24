@@ -1,9 +1,22 @@
-﻿using System.Collections.Generic;
+﻿// made by Naomi in collaboration with Claude Ai
+
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+/// <summary>
+/// Central game loop controller.
+///
+/// Responsibilities:
+///   - Spawning player tokens from StartHub selection data
+///   - Managing turn order and round counting
+///   - Controlling field clickability and the game-lock mechanism
+///   - Handling Power Outage and Energy Drink card effects
+///   - Eliminating players who run out of hydration
+///   - Triggering the Game Over screen on win or full elimination
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     #region Singleton
@@ -27,33 +40,40 @@ public class GameManager : MonoBehaviour
 
     #region Serialized Fields
 
-    [SerializeField] private GameObject playerPrefab; // Your single player prefab
+    // Single prefab used for every player token
+    [SerializeField] private GameObject playerPrefab;
+
+    // The board field all players start on
     [SerializeField] private Field startField;
 
     [Header("UI Panels")]
-    [SerializeField] private PlayerUiPanel[] playerUIPanels; // Assign panels in correct order (Player 1-4)
+    // PlayerUiPanel array, ordered Player 1–4. Assign in Inspector
+    [SerializeField] private PlayerUiPanel[] playerUIPanels;
 
     #endregion
 
     #region Private Fields
 
-    private List<Player> players = new List<Player>(); // Now dynamic, populated at runtime
-    private List<PlayerStats> allEliminatedPlayers = new List<PlayerStats>(); // all eliminated players with stats 
+    // Active players (populated at runtime from PlayerData)
+    private List<Player> players = new List<Player>();
+
+    // Stats snapshot for each eliminated player (used in the end screen)
+    private List<PlayerStats> allEliminatedPlayers = new List<PlayerStats>();
+
     private List<Field> allFields = new List<Field>();
     private int currentPlayerIndex = 0;
 
-    // Power Outage Effect (global for all players, lasts one full round)
+    // Power Outage effect 
     private bool isPowerOutageActive = false;
     private int powerOutageRemainingPlayers = 0;
 
-    // Movement Tracking (for card deck eligibility)
+
     private bool playerMovedThisTurn = false;
 
-    // Game Lock (prevents interaction during dice rolls, animations, etc.)
     private bool isGameLocked = false;
 
-    // statistics for DB
-    private int roundCount = 0;
+    // Statistics tracked for the database
+    private int roundCount;
     private float gameStartTime;
 
     #endregion
@@ -78,30 +98,26 @@ public class GameManager : MonoBehaviour
 
     private void InitializeGame()
     {
-        // Find all fields in the scene
+        // Collect all Field components present in the scene
         allFields = FindObjectsByType<Field>(FindObjectsSortMode.None).ToList();
 
-        // start playtime tracking
         gameStartTime = Time.time;
-
         roundCount = 1;
 
-        // Spawn players from StartHub selection
         SpawnPlayersFromSelection();
 
-        // Set starting position for all spawned players
+        // Place the first player on the start field
         if (players.Count > 0 && startField != null)
-        {
             players[0].SetCurrentField(startField);
-        }
 
         UpdateClickableFields();
         AssignPlayersToUIPanels();
     }
 
     /// <summary>
-    /// Spawns all player characters selected in StartHub.
-    /// Uses a single player prefab and applies the chosen CharacterData sprite per player.
+    /// Instantiates all player tokens from the selection confirmed in the StartHub scene
+    /// Applies each player's chosen name and character sprite, then places all tokens
+    /// on the start field in a correctly repositioned row
     /// </summary>
     private void SpawnPlayersFromSelection()
     {
@@ -124,51 +140,42 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < allSelections.Count; i++)
         {
             var selection = allSelections[i];
-
-            // Spawn at field center – Player.RepositionPlayersOnField() handles
-            // the final layout (horizontal row, centered) once all players are registered.
             Vector3 spawnPosition = startField != null ? startField.transform.position : Vector3.zero;
 
-            // Spawn the player prefab
             GameObject playerObject = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
             playerObject.name = $"Player_{i + 1}_{selection.playerName}";
 
-            // Get Player component and configure it
             Player playerComponent = playerObject.GetComponent<Player>();
             if (playerComponent != null)
             {
-                // Set player name from StartHub input
                 playerComponent.SetPlayerName(selection.playerName);
 
-                // Apply character sprite
+                // Apply the character sprite chosen in the StartHub
                 SpriteRenderer spriteRenderer = playerObject.GetComponent<SpriteRenderer>();
                 if (spriteRenderer != null && selection.characterSprite != null)
                 {
                     spriteRenderer.sprite = selection.characterSprite;
-                    spriteRenderer.color = Color.white; // Preserve original sprite colours
+                    spriteRenderer.color = Color.white; // Preserve the sprite's original colours
                     Debug.Log($"[GameManager] Player {i + 1} sprite applied: {selection.characterSprite.name}");
                 }
-
 
                 players.Add(playerComponent);
                 Debug.Log($"[GameManager] Player {i + 1} spawned: {selection.playerName}");
             }
             else
             {
-                Debug.LogError("[GameManager] Spawned player prefab doesn't have a Player component!");
+                Debug.LogError("[GameManager] Spawned player prefab has no Player component!");
                 Destroy(playerObject);
             }
         }
 
-        // All players are now registered – assign them to the start field WITH repositioning.
-        // Player.SetCurrentField(moveToPosition: true) calls RepositionPlayersOnField()
-        // which centers the full group in a horizontal row on the field.
+        // All players are registered — place them on the start field with proper row repositioning
+        // SetCurrentField(moveToPosition: true) triggers RepositionPlayersOnField(),
+        // which centres the full group on the field
         if (startField != null)
         {
             foreach (var player in players)
-            {
                 player.SetCurrentField(startField, moveToPosition: true);
-            }
         }
     }
 
@@ -185,28 +192,24 @@ public class GameManager : MonoBehaviour
 
     #region Player Management
 
-    /// <summary>
-    /// Returns the player whose turn it currently is
-    /// </summary>
-    public Player GetCurrentPlayer()
-    {
-        return players[currentPlayerIndex];
-    }
+    // Returns the player whose turn is currently active
+    public Player GetCurrentPlayer() => players[currentPlayerIndex];
+
+    // Returns all players still in the game
+    public List<Player> GetAllPlayers() => players;
 
     /// <summary>
-    /// Returns list of all players in the game
-    /// </summary>
-    public List<Player> GetAllPlayers()
-    {
-        return players;
-    }
-
-    /// <summary>
-    /// Switches to the next player and handles round-based effects
+    /// Advances the turn to the next player.
+    ///
+    /// Steps performed in order:
+    ///   1. Increment the player index (wrapping back to 0 triggers a new round)
+    ///   2. Reset the movement flag for the incoming player
+    ///   3. Tick down the Power Outage counter
+    ///   4. Fire the OnNextPlayer event (CardButtonController, etc. subscribe here)
+    ///   5. Refresh clickable fields for the new player's position
     /// </summary>
     public void NextPlayer()
     {
-        // Switch to next player
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
 
         if (currentPlayerIndex == 0)
@@ -215,11 +218,10 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Round {roundCount} started.");
         }
 
-        // Reset movement flag for the NEW player BEFORE event
-        // This ensures CardButtonController sees the correct state for the new player
+        // Reset BEFORE firing the event so subscribers see the correct state immediately
         playerMovedThisTurn = false;
 
-        // Handle Power Outage countdown AFTER switching player
+        // Tick down the Power Outage duration
         if (isPowerOutageActive)
         {
             powerOutageRemainingPlayers--;
@@ -228,12 +230,11 @@ public class GameManager : MonoBehaviour
             if (powerOutageRemainingPlayers <= 0)
             {
                 isPowerOutageActive = false;
-                Debug.Log("Power Outage ended - normal hydration loss applies again.");
+                Debug.Log("Power Outage ended – normal hydration loss resumes.");
             }
         }
 
-        // Invoke event AFTER resetting movement flag
-        // CardButtonController will now see playerMovedThisTurn = false for new player
+        // Fire after resetting the flag so CardButtonController reads the correct state
         OnNextPlayer?.Invoke();
 
         UpdateClickableFields();
@@ -244,55 +245,48 @@ public class GameManager : MonoBehaviour
     #region Field Management
 
     /// <summary>
-    /// Makes fields clickable based on current player position
-    /// Respects game lock state (e.g., during dice rolls)
+    /// Enables clicks only on the neighbouring fields of the current player's position
+    /// Does nothing while the game is locked (e.g. during a dice roll)
     /// </summary>
     public void UpdateClickableFields()
     {
-        // If game is locked (e.g., during dice roll), don't make anything clickable
         if (isGameLocked)
         {
-            Debug.Log("Game is locked - fields remain non-clickable");
+            Debug.Log("Game is locked – fields remain non-clickable");
             return;
         }
 
-        // First, make all fields non-clickable
+        // Reset every field first
         foreach (Field field in allFields)
-        {
             field.SetClickable(false);
-        }
 
-        // Get current player and their position
+        // Enable only the neighbours reachable from the current player's field
         Player currentPlayer = GetCurrentPlayer();
         Field currentField = currentPlayer.GetCurrentField();
 
-        // Make neighboring fields clickable
         if (currentField != null)
         {
-            List<Field> neighbours = currentField.GetNeighbours();
-            foreach (Field neighbour in neighbours)
-            {
+            foreach (Field neighbour in currentField.GetNeighbours())
                 neighbour.SetClickable(true);
-            }
         }
     }
 
     /// <summary>
-    /// Disables all fields (called after player movement)
-    /// Player can only draw cards after moving, not move again
-    /// Fields will be re-enabled when next player's turn starts
+    /// Disables all field clicks immediately
+    /// Called by Player.MoveToField() to prevent a second move in the same turn
+    /// Fields will be re-enabled at the start of the next player's turn
     /// </summary>
     public void DisableAllFields()
     {
         foreach (Field field in allFields)
-        {
             field.SetClickable(false);
-        }
-        Debug.Log("All fields disabled - player can now only draw cards");
+
+        Debug.Log("All fields disabled – player can now only draw cards");
     }
 
     /// <summary>
-    /// Returns all fields that currently have players on them
+    /// Returns all fields that currently have at least one player standing on them
+    /// Each field is included at most once, even if multiple players share it
     /// </summary>
     public List<Field> GetOccupiedFields()
     {
@@ -301,9 +295,7 @@ public class GameManager : MonoBehaviour
         {
             Field field = player.GetCurrentField();
             if (field != null && !occupied.Contains(field))
-            {
                 occupied.Add(field);
-            }
         }
         return occupied;
     }
@@ -313,8 +305,8 @@ public class GameManager : MonoBehaviour
     #region Special Field Actions
 
     /// <summary>
-    /// Handles Bistro entry logic (called from Bistro.cs)
-    /// Checks if player has access card and consumes it
+    /// Checks whether the player can enter the Bistro using an access card
+    /// If so, the card is consumed. Called from Bistro.cs.
     /// </summary>
     public void TryBistroEntry(Player player)
     {
@@ -325,85 +317,72 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"{player.GetPlayerName()} cannot enter Bistro without access card.");
+            Debug.Log($"{player.GetPlayerName()} cannot enter Bistro without an access card.");
         }
     }
 
     #endregion
 
-    #region Card Effects - Power Outage
+    #region Card Effects — Power Outage
 
     /// <summary>
-    /// Activates Power Outage effect (called by CardManager)
-    /// Prevents hydration loss for all players for one complete round
+    /// Activates the Power Outage effect (triggered by CardManager)
+    /// For one complete round, no player loses hydration when moving
+    /// The counter includes the current player (+1) so they also benefit
     /// </summary>
     public void EnableNoHydrationLossForAllPlayersThisTurn()
     {
         isPowerOutageActive = true;
-        powerOutageRemainingPlayers = players.Count + 1; // +1 to include current player
+        powerOutageRemainingPlayers = players.Count + 1;
 
         Debug.Log($"Power Outage activated! No hydration loss for the next {powerOutageRemainingPlayers} moves.");
     }
 
     /// <summary>
-    /// Checks if Power Outage is currently active (called by Player.MoveToField)
+    /// Returns true while the Power Outage effect is active
+    /// Queried by Player.MoveToField() before applying hydration loss
     /// </summary>
-    public bool IsPowerOutageActive()
-    {
-        return isPowerOutageActive;
-    }
+    public bool IsPowerOutageActive() => isPowerOutageActive;
 
     #endregion
 
-    #region Card Effects - Movement Tracking
+    #region Card Effects — Movement Tracking
 
     /// <summary>
-    /// Sets whether the current player moved this turn (called by Player.MoveToField)
-    /// Used to determine which card decks are available
+    /// Records whether the current player has moved this turn
+    /// Called by Player.MoveToField(). Triggers a card-button state refresh
     /// </summary>
     public void SetPlayerMoved(bool moved)
     {
         playerMovedThisTurn = moved;
-
-        // Immediately update card button states after movement
         UpdateCardButtons();
     }
 
     /// <summary>
-    /// Checks if current player moved this turn (called by CardManager/UI)
-    /// Returns true if player moved, false otherwise
-    /// Used for card deck eligibility: both decks if moved, only action cards if not
+    /// Returns true if the current player has already moved this turn
+    /// Used by CardButtonController to decide which card decks to enable
     /// </summary>
-    public bool DidPlayerMoveThisTurn()
-    {
-        return playerMovedThisTurn;
-    }
+    public bool DidPlayerMoveThisTurn() => playerMovedThisTurn;
 
-    /// <summary>
-    /// Updates the card button states by finding and calling CardButtonController
-    /// </summary>
+    /// <summary>Finds CardButtonController in the scene and triggers a state refresh</summary>
     private void UpdateCardButtons()
     {
         CardButtonController controller = FindFirstObjectByType<CardButtonController>();
         if (controller != null)
-        {
             controller.UpdateCardButtonStates();
-        }
     }
 
     #endregion
 
-    #region Card Effects - Energy Drink
+    #region Card Effects — Energy Drink
 
     /// <summary>
-    /// Checks if current player can skip movement (called by CardManager/UI)
-    /// Returns false if Energy Drink effect is active (mandatory move required)
-    /// Used to disable card buttons when player must move
+    /// Returns false if the Energy Drink effect is active (player must move this turn)
+    /// Queried by CardButtonController to disable both card buttons until the player moves
     /// </summary>
     public bool CanCurrentPlayerSkipMovement()
     {
-        Player currentPlayer = GetCurrentPlayer();
-        return !currentPlayer.IsNextTurnMandatory();
+        return !GetCurrentPlayer().IsNextTurnMandatory();
     }
 
     #endregion
@@ -411,13 +390,14 @@ public class GameManager : MonoBehaviour
     #region Helper Methods for CardManager
 
     /// <summary>
-    /// Finds and returns the player with the most hint cards
-    /// Used by CardManager for certain card effects
+    /// Returns the player who currently holds the most hint cards
+    /// Used by CardManager for certain card effects (e.g. steal/compare)
     /// </summary>
     public Player GetPlayerWithMostHintCards()
     {
         Player maxPlayer = null;
         int maxHints = -1;
+
         foreach (Player player in players)
         {
             int hints = player.GetHintCards();
@@ -427,20 +407,19 @@ public class GameManager : MonoBehaviour
                 maxPlayer = player;
             }
         }
+
         return maxPlayer;
     }
 
     /// <summary>
-    /// Called when a card is drawn (by CardManager button handlers)
-    /// Ends the current player's turn by calling NextPlayer()
-    /// NOTE: Some cards (like Secret Passage) handle their own NextPlayer() call in Player.cs
+    /// Called after a player draws a card (by CardDeckButtonHandler)
+    /// Ends the current turn by calling NextPlayer()
     /// </summary>
     public void OnCardDrawn()
     {
-        // termination if no player left
         if (players.Count == 0) return;
 
-        Debug.Log($"{GetCurrentPlayer().GetPlayerName()} drew a card - ending turn.");
+        Debug.Log($"{GetCurrentPlayer().GetPlayerName()} drew a card – ending turn.");
         NextPlayer();
     }
 
@@ -449,28 +428,25 @@ public class GameManager : MonoBehaviour
     #region Dice Events (Game Lock System)
 
     /// <summary>
-    /// Called when dice roll starts (by DiceManager.OnDiceRoll event)
-    /// Locks game and disables all field interactions
+    /// Fires when a dice roll begins (via DiceManager.OnDiceRoll)
+    /// Locks the game and disables all field clicks
     /// </summary>
     private void OnDiceRollStarted()
     {
         isGameLocked = true;
-        Debug.Log("Dice rolling - game locked!");
+        Debug.Log("Dice rolling – game locked!");
 
         foreach (Field field in allFields)
-        {
             field.SetClickable(false);
-        }
     }
 
     /// <summary>
-    /// Called when dice roll finishes (by DiceManager.OnDiceResult event)
-    /// Unlocks game and restores field interactions
+    /// Fires when a dice roll finishes (via DiceManager.OnDiceResult)
+    /// Unlocks the game and re-enables clickable fields if the player has not yet moved
     /// </summary>
     private void OnDiceRollFinished(int result)
     {
-        Debug.Log($"Dice result: {result} - unlocking game!");
-
+        Debug.Log($"Dice result: {result} – unlocking game!");
         isGameLocked = false;
 
         if (!playerMovedThisTurn)
@@ -479,24 +455,25 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Player already moved this turn - fields stay disabled after dice roll.");
+            Debug.Log("Player already moved this turn – fields stay disabled after dice roll.");
         }
     }
 
     /// <summary>
-    /// Checks if game is currently locked (called by UI)
-    /// Returns true during dice rolls, animations, or other blocking events
+    /// Returns true while the game is locked (dice rolling, animation, etc.)
+    /// Queried by UI systems before allowing interaction
     /// </summary>
-    public bool IsGameLocked()
-    {
-        return isGameLocked;
-    }
+    public bool IsGameLocked() => isGameLocked;
 
     #endregion
 
+    // =========================================================================
+    // UI PANEL ASSIGNMENT
+    // =========================================================================
+
     private void AssignPlayersToUIPanels()
     {
-        // Use explicit panel array if assigned, otherwise find them
+        // Prefer the explicitly assigned panel array; fall back to scene search
         PlayerUiPanel[] panels = playerUIPanels != null && playerUIPanels.Length > 0
             ? playerUIPanels
             : FindObjectsByType<PlayerUiPanel>(FindObjectsSortMode.None);
@@ -509,7 +486,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // Hide all panels first
+        // Hide and unassign every panel before matching
         foreach (var panel in panels)
         {
             if (panel != null)
@@ -519,7 +496,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Sprite-based assignment: match player sprite to panel sprite
+        // Match each player to the panel whose Image sprite matches the player's sprite
         foreach (var player in activePlayers)
         {
             SpriteRenderer playerSprite = player.GetComponent<SpriteRenderer>();
@@ -533,7 +510,7 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < panels.Length; i++)
             {
                 if (panels[i] == null) continue;
-                if (panels[i].GetAssignedPlayer() != null) continue;
+                if (panels[i].GetAssignedPlayer() != null) continue; // already taken
 
                 Image panelImage = panels[i].GetComponent<Image>();
                 if (panelImage == null || panelImage.sprite == null) continue;
@@ -542,7 +519,8 @@ public class GameManager : MonoBehaviour
                 {
                     panels[i].AssignPlayer(player);
                     panels[i].Show();
-                    Debug.Log($"UI Assignment: {player.GetPlayerName()} (Sprite: {playerSprite.sprite.name}) → Panel {i + 1}");
+                    Debug.Log($"UI Assignment: {player.GetPlayerName()} " +
+                              $"(Sprite: {playerSprite.sprite.name}) → Panel {i + 1}");
                     matched = true;
                     break;
                 }
@@ -550,9 +528,10 @@ public class GameManager : MonoBehaviour
 
             if (!matched)
             {
-                Debug.LogWarning($"No matching UI panel found for {player.GetPlayerName()} with sprite {playerSprite.sprite.name}");
+                Debug.LogWarning($"No matching UI panel found for {player.GetPlayerName()} " +
+                                 $"with sprite {playerSprite.sprite.name}");
 
-                // Fallback: assign to first free panel
+                // Fallback: assign to the first available panel
                 for (int i = 0; i < panels.Length; i++)
                 {
                     if (panels[i] != null && panels[i].GetAssignedPlayer() == null)
@@ -566,18 +545,28 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Initial display update for all visible panels
+        // Trigger an initial display refresh for all assigned panels
         foreach (var player in activePlayers)
-        {
             UiManager.Instance?.UpdatePlayerUI(player);
-        }
 
         Debug.Log($"UI Assignment complete: {activePlayers.Count} player(s) → panels assigned by sprite.");
     }
 
+    // =========================================================================
+    // PLAYER ELIMINATION
+    // =========================================================================
+
     /// <summary>
-    /// eliminates player who has run out of hydration
-    /// removes them from the game, hides their UI panel and destroys their GameObject
+    /// Removes a player who has run out of hydration from the game.
+    ///
+    /// Steps:
+    ///   1. Displays an elimination message
+    ///   2. Hides the player's UI panel
+    ///   3. Records the result in the database
+    ///   4. Saves the stats snapshot for the end screen
+    ///   5. Removes the player from the active list and destroys their token
+    ///   6. If the last player was eliminated, shows the Game Over screen
+    ///   7. If the eliminated player was the active one, advances the turn
     /// </summary>
     public void EliminatePlayer(Player player)
     {
@@ -585,12 +574,11 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"{player.GetPlayerName()} is eliminated!");
 
-        // deactivate UI
+        // HUD notification
         if (UiManager.Instance != null)
-        {
             UiManager.Instance.SetEventText($"{player.GetPlayerName()} has been eliminated!");
-        }
 
+        // Hide the player's UI panel
         PlayerUiPanel[] panels = FindObjectsByType<PlayerUiPanel>(FindObjectsSortMode.None);
         foreach (var panel in panels)
         {
@@ -601,7 +589,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // DB-call for disqualified players
+        // Record the loss in the database
         if (DBManager.Instance != null)
         {
             DBManager.Instance.UpdatePlayerStats(
@@ -612,7 +600,7 @@ public class GameManager : MonoBehaviour
             );
         }
 
-        // NEU: Stats für diesen Spieler speichern, BEVOR er entfernt wird
+        // Save a stats snapshot before removing the player from the list
         PlayerStats eliminatedPlayerStats = new PlayerStats
         {
             PlayerName = player.GetPlayerName(),
@@ -622,40 +610,33 @@ public class GameManager : MonoBehaviour
         };
         allEliminatedPlayers.Add(eliminatedPlayerStats);
 
-        // call NextPlayer() first, if it is this players turn
         bool wasCurrentPlayer = players[currentPlayerIndex] == player;
 
         players.Remove(player);
 
+        // Last player eliminated — game over with no winner
         if (players.Count == 0)
         {
-            Debug.Log("All players eliminated - Game Over!");
+            Debug.Log("All players eliminated – Game Over!");
             Destroy(player.gameObject);
 
-            // deactivate all buttons
+            // Disable card buttons
             CardButtonController controller = FindFirstObjectByType<CardButtonController>();
             if (controller != null)
                 controller.SetCardButtonsInteractable(false, false);
 
-            // NEU: ALLE Spieler Stats kombinieren (ausgeschiedene + aktuell letzter)
-            List<PlayerStats> allFinalStats = new List<PlayerStats>();
+            // The last player's stats are already in allEliminatedPlayers (added above)
+            List<PlayerStats> allFinalStats = new List<PlayerStats>(allEliminatedPlayers);
 
-            // 1. Alle bereits ausgeschiedenen Spieler hinzufügen
-            allFinalStats.AddRange(allEliminatedPlayers);
+            Debug.Log($"GameOver – Total players tracked: {allFinalStats.Count}");
 
-            // 2. Der letzte Spieler (der gerade jetzt ausscheidet) ist noch nicht in allEliminatedPlayers?
-            // Doch, wir haben ihn ja oben schon hinzugefügt! Also kein doppelter Eintrag nötig.
-
-            Debug.Log($"GameOver - Total players tracked: {allFinalStats.Count}");
-
-            // Show Game Over screen with all players
             if (GameOverScreenManager.Instance != null)
-            {
                 GameOverScreenManager.Instance.ShowEndScreen(null, allFinalStats);
-            }
+
             return;
         }
 
+        // Advance the turn if the eliminated player was the active one
         if (wasCurrentPlayer)
         {
             currentPlayerIndex = currentPlayerIndex % players.Count;
@@ -668,19 +649,22 @@ public class GameManager : MonoBehaviour
             currentPlayerIndex = 0;
         }
 
-        // eliminate Player from scene
         Destroy(player.gameObject);
     }
 
-    // NEUE HILFSMETHODE für den Gewinn-Fall
+    // =========================================================================
+    // END-SCREEN HELPERS
+    // =========================================================================
+
+    /// <summary>
+    /// Builds a combined PlayerStats list for the end screen
+    /// Includes all previously eliminated players plus every player still active,
+    /// marking the winner (if any) with GameResult.Win and the rest with GameResult.Loss
+    /// </summary>
     public List<PlayerStats> GetAllPlayersStats(Player winner = null)
     {
-        List<PlayerStats> allStats = new List<PlayerStats>();
+        List<PlayerStats> allStats = new List<PlayerStats>(allEliminatedPlayers);
 
-        // 1. Alle ausgeschiedenen Spieler (Loss)
-        allStats.AddRange(allEliminatedPlayers);
-
-        // 2. Alle aktuell noch lebenden Spieler
         foreach (Player p in players)
         {
             GameResult result = (p == winner) ? GameResult.Win : GameResult.Loss;
@@ -697,21 +681,13 @@ public class GameManager : MonoBehaviour
         return allStats;
     }
 
-#region Database Helpers
+    #region Database Helpers
 
-/// <summary>
-/// returns the number of rounds played so far
-/// </summary>
-public int GetRoundCount() => roundCount;
+    // Returns the number of rounds completed so far
+    public int GetRoundCount() => roundCount;
 
-    /// <summary>
-    /// returns the playtime in seconds since game start
-    /// </summary>
-    public int GetPlaytimeSeconds()
-    {
-        return Mathf.RoundToInt(Time.time - gameStartTime);
-    }
+    // Returns the total elapsed playtime in whole seconds
+    public int GetPlaytimeSeconds() => Mathf.RoundToInt(Time.time - gameStartTime);
 
     #endregion
-
 }

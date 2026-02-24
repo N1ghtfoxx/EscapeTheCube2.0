@@ -1,15 +1,31 @@
+// made by Naomi in collaboration with Claude Ai
+
 using UnityEngine;
 
 /// <summary>
-/// Wrapper component for card deck buttons
-/// Connects UI buttons to CardManager while handling turn logic properly
-/// Attach this to your Item Card Button and Action Card Button
+/// Connects a card-deck UI button to the card draw and turn-end pipeline
+///
+/// Attach this component to your Item Card Button and Event Card Button
+/// Wire each button's OnClick() event to OnButtonClicked() in the Inspector
+///
+/// Click flow:
+///   1. The correct card type is drawn via CardManager
+///   2. The card's effects are applied
+///   3. The current turn ends via GameManager.OnCardDrawn() -> NextPlayer()
 /// </summary>
 public class CardDeckButtonHandler : MonoBehaviour
 {
+    // -------------------------------------------------------------------------
+    // Inspector
+    // -------------------------------------------------------------------------
+
     [Header("Card Type")]
-    [Tooltip("Wich type of card does this button draw?")]
+    [Tooltip("Which type of card does this button draw?")]
     [SerializeField] private CardDeckType deckType;
+
+    // -------------------------------------------------------------------------
+    // Types
+    // -------------------------------------------------------------------------
 
     public enum CardDeckType
     {
@@ -17,12 +33,13 @@ public class CardDeckButtonHandler : MonoBehaviour
         ActionCard
     }
 
+    // -------------------------------------------------------------------------
+    // Button Callback
+    // -------------------------------------------------------------------------
+
     /// <summary>
-    /// Call this method from the Button's OnClick() event in the Inspector
-    /// This will:
-    /// 1. Draw the appropriate card via CardManager
-    /// 2. Apply the card's effects
-    /// 3. End the turn via GameManager.OnCardDrawn() (which calls NextPlayer)
+    /// Called by the Button's OnClick() event in the Inspector
+    /// Draws the appropriate card and ends the current player's turn
     /// </summary>
     public void OnButtonClicked()
     {
@@ -38,7 +55,7 @@ public class CardDeckButtonHandler : MonoBehaviour
             return;
         }
 
-        // draw the appropriate card
+        // Draw the card for the configured deck type
         switch (deckType)
         {
             case CardDeckType.ItemCard:
@@ -49,7 +66,7 @@ public class CardDeckButtonHandler : MonoBehaviour
                 break;
         }
 
-        // end the turn (calls NextPlayer)
+        // End the turn — internally calls NextPlayer()
         GameManager.Instance.OnCardDrawn();
     }
 }

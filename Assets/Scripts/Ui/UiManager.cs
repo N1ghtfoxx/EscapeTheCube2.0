@@ -1,19 +1,28 @@
+// made by Naomi in collaboration with Claude Ai
+
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using System.Collections;
 
+/// <summary>
+/// Central UI manager for in-game feedback and player panel updates
+///
+/// Responsibilities:
+///   - Displaying queued event messages in the UpperPanel text field
+///   - Routing player-stat updates to the correct PlayerUiPanel
+///
+/// Called by CardManager, GameManager, field scripts, etc.
+/// Most Player methods (AddHintCard, ChangeHydration, …) trigger UpdatePlayerUI() automatically,
+/// so manual calls are rarely needed
+/// </summary>
 public class UiManager : MonoBehaviour
 {
+    // -------------------------------------------------------------------------
+    // Singleton
+    // -------------------------------------------------------------------------
+
     public static UiManager Instance { get; private set; }
-
-    [SerializeField] private TextMeshProUGUI eventText;
-
-    [Header("Event Message Settings")]
-    [SerializeField] private float messageDuration = 2.5f;
-
-    private Queue<string> messageQueue = new Queue<string>();
-    private bool isDisplayingMessage = false;
 
     private void Awake()
     {
@@ -29,11 +38,32 @@ public class UiManager : MonoBehaviour
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Inspector
+    // -------------------------------------------------------------------------
+
+    // HUD text element used to display event messages
+    [SerializeField] private TextMeshProUGUI eventText;
+
+    [Header("Event Message Settings")]
+    [Tooltip("How long (in seconds) each queued message is visible before the next one appears")]
+    [SerializeField] private float messageDuration = 2.5f;
+
+    // -------------------------------------------------------------------------
+    // State
+    // -------------------------------------------------------------------------
+
+    private Queue<string> messageQueue = new Queue<string>();
+    private bool isDisplayingMessage = false;
+
+    // -------------------------------------------------------------------------
+    // Event Messages
+    // -------------------------------------------------------------------------
+
     /// <summary>
-    /// Displays an event message to the player
-    /// Messages are queued and shown one after another
-    /// Each message is displayed for messageDuration seconds
-    /// Called by CardManager, GameManager, EnemyManager, etc.
+    /// Adds a message to the display queue
+    /// If no message is currently shown, the queue starts playing immediately
+    /// Each message is visible for <see cref="messageDuration"/> seconds
     /// </summary>
     public void SetEventText(string message)
     {
@@ -43,10 +73,8 @@ public class UiManager : MonoBehaviour
             return;
         }
 
-        // add message to queue
         messageQueue.Enqueue(message);
 
-        // start message display if not already showing
         if (!isDisplayingMessage)
         {
             StartCoroutine(DisplayMessageQueue());
@@ -54,7 +82,9 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Displays messages from the queue one by one
+    /// Coroutine that drains the message queue one entry at a time,
+    /// pausing for <see cref="messageDuration"/> between messages
+    /// Clears the text field once the queue is empty
     /// </summary>
     private IEnumerator DisplayMessageQueue()
     {
@@ -62,41 +92,38 @@ public class UiManager : MonoBehaviour
 
         while (messageQueue.Count > 0)
         {
-            // get next message
-            string message = messageQueue.Dequeue();
-
-            // show message
-            eventText.text = message;
-
-            // wait for duration
+            eventText.text = messageQueue.Dequeue();
             yield return new WaitForSeconds(messageDuration);
         }
 
-        // clear text after last message
         eventText.text = "";
         isDisplayingMessage = false;
     }
 
     /// <summary>
-    /// Clears the message queue and current message immediately
-    /// Useful for resetting UI state
+    /// Immediately stops all queued messages and clears the text field
+    /// Useful when resetting UI state (e.g. on game over)
     /// </summary>
     public void ClearEventText()
     {
         StopAllCoroutines();
         messageQueue.Clear();
+
         if (eventText != null)
-        {
             eventText.text = "";
-        }
+
         isDisplayingMessage = false;
     }
 
+    // -------------------------------------------------------------------------
+    // Player Panel Updates
+    // -------------------------------------------------------------------------
+
     /// <summary>
-    /// Updates the UI panel for a specific player
-    /// Automatically finds the correct PlayerUiPanel assigned to this player
-    /// NOTE: Most Player methods (AddHintCard, ChangeHydration, etc.) call this automatically!
-    /// You usually don't need to call this manually.
+    /// Refreshes the HUD panel that belongs to the given player
+    /// Searches all active PlayerUiPanel components for a matching assignment
+    ///
+    /// NOTE: Most Player methods call this automatically — manual calls are rarely needed
     /// </summary>
     public void UpdatePlayerUI(Player player)
     {
@@ -111,6 +138,7 @@ public class UiManager : MonoBehaviour
                 return;
             }
         }
-        Debug.LogWarning($"Kein UI-Panel für {player.GetPlayerName()} gefunden.");
+
+        Debug.LogWarning($"[UiManager] No UI panel found for player: {player.GetPlayerName()}");
     }
 }
