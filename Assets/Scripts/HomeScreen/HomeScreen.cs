@@ -6,7 +6,7 @@ public class HomeScreen : MonoBehaviour
     
     public void StartGame()
     {
-        SceneManager.LoadScene("StartScreen");
+        SceneManager.LoadScene("CharacterSelection");
     }
     
 }
