@@ -924,9 +924,6 @@ MonoBehaviour:
   hydrationText: {fileID: 354442572}
   cluesText: {fileID: 354442571}
   keycardsText: {fileID: 354442570}
-  playerNameText: {fileID: 0}
-  playerIcon: {fileID: 0}
-  colorIndicator: {fileID: 0}
 --- !u!114 &354442570 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2185396166455563277, guid: 2bcb7cde3d641b04d8bd60a7869442fc, type: 3}
@@ -3562,9 +3559,6 @@ MonoBehaviour:
   hydrationText: {fileID: 867799014}
   cluesText: {fileID: 867799013}
   keycardsText: {fileID: 867799012}
-  playerNameText: {fileID: 0}
-  playerIcon: {fileID: 0}
-  colorIndicator: {fileID: 0}
 --- !u!114 &981044567 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2184727949319093021, guid: 4d01545b15793b048b9fb09fe4adf677, type: 3}
@@ -4222,9 +4216,6 @@ MonoBehaviour:
   hydrationText: {fileID: 1337160468}
   cluesText: {fileID: 1337160467}
   keycardsText: {fileID: 1337160466}
-  playerNameText: {fileID: 0}
-  playerIcon: {fileID: 0}
-  colorIndicator: {fileID: 0}
 --- !u!1 &1348928214
 GameObject:
   m_ObjectHideFlags: 0
@@ -6413,9 +6404,6 @@ MonoBehaviour:
   hydrationText: {fileID: 1838903403}
   cluesText: {fileID: 1838903402}
   keycardsText: {fileID: 1838903401}
-  playerNameText: {fileID: 0}
-  playerIcon: {fileID: 0}
-  colorIndicator: {fileID: 0}
 --- !u!1 &1848055812
 GameObject:
   m_ObjectHideFlags: 0

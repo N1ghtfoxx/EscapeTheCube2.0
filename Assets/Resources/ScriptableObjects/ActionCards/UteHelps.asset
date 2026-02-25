@@ -15,6 +15,6 @@ MonoBehaviour:
   cardType: 1
   cardtext: Ute hilft dir
   cardEffect: "Blockiere Alf f\xFCr eine Runde"
-  hydration: 0
+  hydration: 2
   suspendedTurns: 0
   cardEffectType: 6
