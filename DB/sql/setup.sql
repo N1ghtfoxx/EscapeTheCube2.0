@@ -1,3 +1,4 @@
+-- Vollständig mit KI gemacht
 CREATE DATABASE IF NOT EXISTS escape_the_cube CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE escape_the_cube;
 

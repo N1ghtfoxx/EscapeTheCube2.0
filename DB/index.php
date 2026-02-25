@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿<!-- Vollständig mit KI gemacht -->
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
