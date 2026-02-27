@@ -1,3 +1,4 @@
+Von Naomi Zellhofer & Osman Sengül
 # "Escape The Cube"
 
 
@@ -42,6 +43,7 @@ GLHF
 
 ### Spielanleitung
 
+###### Notiz: Um das Spiel in der Unity Game Engine zu spielen, starte in der HomeScreen scene.
 
 
 ##### Spielbeginn
